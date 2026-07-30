@@ -1,0 +1,28 @@
+﻿<Properties StartupConfiguration="{146A791D-73B9-CF29-B42C-B91C1DD3F2E6}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/CameraController.cs">
+    <Files>
+      <File FileName="Assets/CameraController.cs" Line="26" Column="1" />
+      <File FileName="Assets/CharacterMotor.cs" Line="116" Column="1" />
+      <File FileName="Assets/HumanInput.cs" Line="25" Column="50" />
+      <File FileName="Assets/GravityScale.cs" Line="13" Column="6" />
+      <File FileName="Assets/BallController.cs" Line="7" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Duos" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="CameraController.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
