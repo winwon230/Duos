@@ -126,6 +126,11 @@ public class CharacterMotor : MonoBehaviour
         }
     }
 
+    public void Dive()
+    {
+ 
+    }
+
     // Update is called once per frame
     void Update()
     {

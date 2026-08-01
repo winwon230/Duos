@@ -8,6 +8,7 @@ public class HumanInput : MonoBehaviour
     private CharacterMotor myMotor;
     private float mouseSensitivity = 5f;
     private float JumpHeight = 2f;
+    private float nextHitTime = 0f;
     [SerializeField] Camera cam;
     [SerializeField] CameraController camcon;
 
@@ -46,9 +47,22 @@ public class HumanInput : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            myMotor.HitBall();
+            float HitCooldown = 1f;
+
+            if (Time.time >= nextHitTime)
+            {
+                myMotor.HitBall();
+                nextHitTime = Time.time + HitCooldown;
+                Debug.Log(nextHitTime);
+            }
+            Debug.Log(nextHitTime);
             Debug.Log("Ball Hit attempt");
             
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            myMotor.Dive();
         }
 
         myMotor.RotateCharacter(PlayerRotation);
