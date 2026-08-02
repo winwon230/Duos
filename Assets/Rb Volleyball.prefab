@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 108261567613255226}
   - component: {fileID: 5703228208608619540}
   - component: {fileID: 4207746424039678456}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rb Volleyball
   m_TagString: Volleyball
   m_Icon: {fileID: 0}

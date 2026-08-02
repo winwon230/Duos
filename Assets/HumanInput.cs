@@ -62,7 +62,7 @@ public class HumanInput : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            myMotor.Dive();
+            myMotor.TriggerDive();
         }
 
         myMotor.RotateCharacter(PlayerRotation);

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class CharacterMotor : MonoBehaviour
@@ -7,6 +9,7 @@ public class CharacterMotor : MonoBehaviour
 
     private CharacterController controller;
     private Animator animat;
+    private CameraController cameraScript;
     private float gravityMagnitude = 9.81f;
     private Vector3 Gravity;
     private float yVelocity = 0f;
@@ -20,6 +23,7 @@ public class CharacterMotor : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animat = GetComponent<Animator>();
+        cameraScript = Camera.main.GetComponent<CameraController>();
     }
 
 
@@ -126,14 +130,70 @@ public class CharacterMotor : MonoBehaviour
         }
     }
 
-    public void Dive()
+    public void TriggerDive()
     {
- 
+        if(controller.isGrounded == true)
+        {
+            StartCoroutine(Dive()); 
+        }
+
+        CheckDiveHit();
+    }
+        private IEnumerator Dive()
+    {
+
+        float DiveDistance = 4f;
+        float DiveDuration = 0.5f;
+        float TimePassed = 0f;
+
+        Vector3 StartingPosition = transform.position;
+        Vector3 TargetPosition = StartingPosition + transform.forward * DiveDistance;
+
+        while(TimePassed < DiveDuration)
+        {
+            TimePassed += Time.deltaTime;
+            float t = TimePassed/DiveDuration;
+
+            transform.position = Vector3.Lerp(StartingPosition, TargetPosition, t);
+
+            cameraScript.Dive(t);
+
+            yield return null;
+        }
+
     }
 
+    public void CheckDiveHit()
+    {
+        Vector3 boxCentre = transform.position + transform.forward * 1.5f + transform.up * 1.25f;
+        Vector3 boxSize = new Vector3(2f, 2f, 3f) / 2f;
+
+        Collider [] inBoxColliders = Physics.OverlapBox(boxCentre, boxSize, transform.rotation);
+
+        foreach (Collider hit in inBoxColliders)
+        {
+            if(hit.CompareTag("Volleyball"))
+            {
+                BallController ballScript = hit.GetComponent<BallController>();
+                ballScript.DigBall();
+            }
+        }
+
+    }
+
+    void OnDrawGizmos()
+    {
+        // Basically describes where the hitbox area for the dive needs to be
+        Gizmos.color = Color.green;
+        Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+        Vector3 localCentre = new Vector3(0f, 1.25f, 1.5f);
+        Vector3 size = new Vector3(2f, 2f, 3f);
+        Gizmos.DrawWireCube(localCentre, size);
+    }
     // Update is called once per frame
     void Update()
     {
+
 
         if(controller.isGrounded == true && yVelocity < 0f)
         {

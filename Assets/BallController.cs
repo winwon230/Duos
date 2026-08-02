@@ -45,6 +45,14 @@ public class BallController : MonoBehaviour
         rb.AddForce(SpikeDirection * spikeForce, ForceMode.Impulse);
     }
 
+    public void DigBall()
+    {
+        float digPower = 3f;
+        rb.velocity = Vector3.zero;
+        rb.AddForce(Vector3.up * digPower, ForceMode.Impulse);
+        Debug.Log("Dive Hit registered");
+    }
+
 
     // Update is called once per frame
     void Update()
