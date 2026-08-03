@@ -9,6 +9,8 @@ public class HumanInput : MonoBehaviour
     private float mouseSensitivity = 5f;
     private float JumpHeight = 2f;
     private float nextHitTime = 0f;
+    private float nextDiveTime = 0f;
+    public CrosshairController crosshairController;
     [SerializeField] Camera cam;
     [SerializeField] CameraController camcon;
 
@@ -45,24 +47,31 @@ public class HumanInput : MonoBehaviour
             Debug.Log("Registered");
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0)) // Hitting including spiking/bumping and cooldown timer - links to CharacterMotor
         {
             float HitCooldown = 1f;
 
             if (Time.time >= nextHitTime)
             {
                 myMotor.HitBall();
+                crosshairController.Cooldown();
                 nextHitTime = Time.time + HitCooldown;
                 Debug.Log(nextHitTime);
             }
-            Debug.Log(nextHitTime);
-            Debug.Log("Ball Hit attempt");
             
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F)) // Diving + cooldown timer
         {
-            myMotor.TriggerDive();
+
+            float DiveCooldown = 1f;
+
+            if(Time.time >= nextDiveTime)
+            {
+                myMotor.TriggerDive();
+                nextDiveTime = Time.time + DiveCooldown;
+            }
+
         }
 
         myMotor.RotateCharacter(PlayerRotation);

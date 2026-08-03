@@ -358,6 +358,7 @@
 "Assets/BallController.cs"
 "Assets/CameraController.cs"
 "Assets/CharacterMotor.cs"
+"Assets/CrosshairController.cs"
 "Assets/GravityScale.cs"
 "Assets/HumanInput.cs"
 -langversion:9.0

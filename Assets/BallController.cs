@@ -47,7 +47,7 @@ public class BallController : MonoBehaviour
 
     public void DigBall()
     {
-        float digPower = 3f;
+        float digPower = 2f;
         rb.velocity = Vector3.zero;
         rb.AddForce(Vector3.up * digPower, ForceMode.Impulse);
         Debug.Log("Dive Hit registered");
