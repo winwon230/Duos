@@ -13,10 +13,12 @@ public class CharacterMotor : MonoBehaviour
     private float gravityMagnitude = 9.81f;
     private Vector3 Gravity;
     private float yVelocity = 0f;
-    private float DistanceToBall;
 
     public GameObject volleyball;
     public Transform fpvCamTransform;
+
+    private GameObject nearestBall = null; // ref in hit ball function
+    private float DistanceToBall; // ref in hit ball function
 
     // Start is called before the first frame update
     void Start()
@@ -78,10 +80,9 @@ public class CharacterMotor : MonoBehaviour
         }
     }
 
-    public void HitBall()
+    public void HitBall(string HitType)
     {
         GameObject[] AllBalls = GameObject.FindGameObjectsWithTag("Volleyball");
-        GameObject nearestBall = null;
         float shortestDistance = Mathf.Infinity;
 
 
@@ -109,26 +110,37 @@ public class CharacterMotor : MonoBehaviour
             {
                 BallController ballScript = HitInfo.collider.GetComponent<BallController>();
 
-                float DistanceToBall = HitInfo.distance;
+                DistanceToBall = HitInfo.distance;
 
                 //Bump here
-                if (DistanceToBall <= 1f && ballScript != null && controller.isGrounded)
+                if (DistanceToBall <= 1.5f && ballScript != null && controller.isGrounded && HitType == "Hit")
                 {
                     ballScript.Bump(transform.forward);
                 }
                 //Put Spike below
 
-                if (DistanceToBall <= 2f && ballScript != null && controller.isGrounded == false)
+                if (DistanceToBall <= 2f && ballScript != null && controller.isGrounded == false && HitType == "Hit")
                 {
                     Vector3 SpikeDirection = fpvCamTransform.transform.forward;
 
                     ballScript.Spike(SpikeDirection);
                 }
 
+                // Front set below
+
+                if(DistanceToBall <= 1.5f && ballScript != null && HitType == "Front Set")
+                {
+                    ballScript.frontSet(transform.forward);
+                    Debug.Log("Front Set Step 2 succesful");
+                }
+
+
+
             }
 
         }
     }
+
 
     public void TriggerDive()
     {

@@ -53,15 +53,14 @@ public class HumanInput : MonoBehaviour
 
             if (Time.time >= nextHitTime)
             {
-                myMotor.HitBall();
+                myMotor.HitBall("Hit");
                 crosshairController.Cooldown();
                 nextHitTime = Time.time + HitCooldown;
-                Debug.Log(nextHitTime);
             }
             
         }
 
-        if (Input.GetKeyDown(KeyCode.F)) // Diving + cooldown timer
+        if (Input.GetKeyDown(KeyCode.Q)) // Diving + cooldown timer
         {
 
             float DiveCooldown = 1f;
@@ -74,6 +73,18 @@ public class HumanInput : MonoBehaviour
 
         }
 
+        if(Input.GetKeyDown(KeyCode.F)) // Front set
+        {
+            float HitCooldown = 1f;
+
+            if(Time.time >= nextHitTime)
+            {
+                myMotor.HitBall("Front Set");
+                crosshairController.Cooldown();
+                nextHitTime = Time.time + HitCooldown;
+                Debug.Log("Front Set step 1");
+            }
+        }
         myMotor.RotateCharacter(PlayerRotation);
         myMotor.MoveCharacter(RelativeMoveDirection);
         camcon.RotateCamera(xRotation);

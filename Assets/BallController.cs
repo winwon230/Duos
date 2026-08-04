@@ -45,6 +45,23 @@ public class BallController : MonoBehaviour
         rb.AddForce(SpikeDirection * spikeForce, ForceMode.Impulse);
     }
 
+    public void frontSet(Vector3 SetDirection)
+    {
+        float setForceX = 0.3f;
+        float setForceY = 2.5f;
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        Vector3 ForwardPush = SetDirection * setForceX;
+        Vector3 UpwardPush = Vector3.up * setForceY;
+        Vector3 finalForce = ForwardPush + UpwardPush;
+
+        rb.AddForce(finalForce, ForceMode.Impulse);
+        Debug.Log("Front Set step 3");
+
+    }
+
     public void DigBall()
     {
         float digPower = 2f;
