@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterMotor : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class CharacterMotor : MonoBehaviour
 
     public GameObject volleyball;
     public Transform fpvCamTransform;
+    public GameObject Shadow;
 
     private GameObject nearestBall = null; // ref in hit ball function
     private float DistanceToBall; // ref in hit ball function
@@ -68,10 +70,13 @@ public class CharacterMotor : MonoBehaviour
 
         GameObject SpawnedBall = Instantiate(volleyball, Pos + transform.forward, Quaternion.identity);
         Rigidbody rbBall = SpawnedBall.GetComponent<Rigidbody>();
+        GameObject SpawnedShadow = Instantiate(Shadow, Pos + transform.forward, Quaternion.Euler(90f, 0f, 0f));
 
+        ShadowController shadowScript = SpawnedShadow.GetComponent<ShadowController>();
         BallController ballScript = SpawnedBall.GetComponent<BallController>();
 
         ballScript.setRotation(controller);
+        shadowScript.sendBall(SpawnedBall);
 
         if (rbBall != null)
         {

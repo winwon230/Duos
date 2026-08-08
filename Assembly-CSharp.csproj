@@ -70,6 +70,7 @@
     <Compile Include="Assets/GravityScale.cs" />
     <Compile Include="Assets/CharacterMotor.cs" />
     <Compile Include="Assets/BallController.cs" />
+    <Compile Include="Assets/ShadowController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

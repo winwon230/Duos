@@ -361,6 +361,7 @@
 "Assets/CrosshairController.cs"
 "Assets/GravityScale.cs"
 "Assets/HumanInput.cs"
+"Assets/ShadowController.cs"
 -langversion:9.0
 /deterministic
 /optimize+
