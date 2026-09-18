@@ -3,31 +3,51 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class CameraController : MonoBehaviour
 {
     private bool camLock = false;
     private float netxRotation = 0f;
+    private Camera currentCam;
+    private Quaternion xRotationQuaternion;
+    public Camera Fpv;
+    public Camera Tpv;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        Tpv.enabled = false;
+        Fpv.enabled = true;
+
+        currentCam = Fpv;
     }
 
     public void RotateCamera(float xRotation)
     {
         netxRotation -= xRotation;
-        netxRotation = Mathf.Clamp(netxRotation, -70f, 70f);
+        
+        if(currentCam == Fpv)
+        {
+            netxRotation = Mathf.Clamp(netxRotation, -70f, 70f); 
+        }
 
-        transform.localRotation = Quaternion.Euler(netxRotation, 0f, 0f);
+        else if(currentCam == Tpv)
+        {
+            netxRotation = Mathf.Clamp(netxRotation, -52f, 70f);
+        }
+
+        currentCam.transform.localRotation = Quaternion.Euler(netxRotation, 0f, 0f);
+        xRotationQuaternion = Quaternion.Euler(netxRotation, 0f, 0f);
         
     }
     
     public void Dive(float t)
     {
+        if(Tpv.enabled == false && Fpv.enabled == true)
+        {
         // Kinda unsmooth
-        Vector3 currentPos = transform.localPosition;
+        Vector3 currentPos = currentCam.transform.localPosition;
 
         if (t <= 0.3f)
         {
@@ -45,16 +65,43 @@ public class CameraController : MonoBehaviour
         }
 
 
-        transform.localPosition = currentPos;
+        Fpv.transform.localPosition = currentPos;
+        }
     }
 
+    public void toggleCam()
+    {
+        if(Fpv.enabled == true)
+        {
+            Fpv.enabled = false;
+            Tpv.enabled = true;
+            currentCam = Tpv;
+        } 
+
+        else if(Tpv.enabled == true)
+        {
+            Fpv.enabled = true;
+            Tpv.enabled = false;
+            currentCam = Fpv;
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
+        if(Fpv.enabled == true)
+        {
+            currentCam = Fpv;
+        }
+
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             camLock = !camLock;
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            toggleCam();
         }
 
         if (camLock == true)
@@ -67,6 +114,26 @@ public class CameraController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+        }
+    }
+
+    void LateUpdate()
+    {
+        if(Tpv.enabled == true)
+        {
+            currentCam = Tpv;
+            Vector3 CurrentPos = transform.position;
+            Vector3 TpvOffset = xRotationQuaternion * new Vector3(0f, 0f, -3.33f);
+            TpvOffset.y += 1.8f;
+            Tpv.transform.position = CurrentPos + transform.TransformDirection(TpvOffset);
+
+            Vector3 tpvPos = Tpv.transform.position;
+
+            if(Tpv.transform.position.y < 0.1f)
+            {
+                tpvPos.y = 0.1f;
+                Tpv.transform.position = tpvPos;
+            }
         }
     }
 }

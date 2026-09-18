@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class CharacterMotor : MonoBehaviour
 {
+    //Goober is T1
 
     private CharacterController controller;
     private Animator animat;
@@ -16,8 +17,10 @@ public class CharacterMotor : MonoBehaviour
     private float yVelocity = 0f;
 
     public GameObject volleyball;
-    public Transform fpvCamTransform;
+    public Transform camConTransform;
     public GameObject Shadow;
+    public GameObject camController; //This is the camera controller thingy thats a child object
+    public gameManager gameManager;
 
     private GameObject nearestBall = null; // ref in hit ball function
     private float DistanceToBall; // ref in hit ball function
@@ -27,7 +30,7 @@ public class CharacterMotor : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animat = GetComponent<Animator>();
-        cameraScript = Camera.main.GetComponent<CameraController>();
+        cameraScript = camController.GetComponent<CameraController>();
     }
 
 
@@ -57,7 +60,7 @@ public class CharacterMotor : MonoBehaviour
     {
         if (controller.isGrounded == true)
         {
-            float Power = Mathf.Sqrt(JumpHeight * 1.5f * gravityMagnitude);
+            float Power = Mathf.Sqrt(JumpHeight * 1.7f * gravityMagnitude);
             yVelocity = Power;
             animat.Play("jump");
 
@@ -120,14 +123,16 @@ public class CharacterMotor : MonoBehaviour
                 if (DistanceToBall <= 1.5f && ballScript != null && controller.isGrounded && HitType == "Hit")
                 {
                     ballScript.Bump(transform.forward);
+                    gameManager.Touch("T1");
                 }
                 //Put Spike below
 
                 if (DistanceToBall <= 2f && ballScript != null && controller.isGrounded == false && HitType == "Hit")
                 {
-                    Vector3 SpikeDirection = fpvCamTransform.transform.forward;
+                    Vector3 SpikeDirection = Camera.main.transform.forward;
 
                     ballScript.Spike(SpikeDirection);
+                    gameManager.Touch("T1");
                 }
 
                 // Front set below
@@ -135,7 +140,7 @@ public class CharacterMotor : MonoBehaviour
                 if(DistanceToBall <= 1.5f && ballScript != null && HitType == "Front Set")
                 {
                     ballScript.frontSet(transform.forward);
-                    Debug.Log("Front Set Step 2 succesful");
+                    gameManager.Touch("T1");
                 }
 
 
@@ -192,6 +197,7 @@ public class CharacterMotor : MonoBehaviour
             {
                 BallController ballScript = hit.GetComponent<BallController>();
                 ballScript.DigBall();
+                gameManager.Touch("T1");
             }
         }
 

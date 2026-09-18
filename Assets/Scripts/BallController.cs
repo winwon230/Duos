@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class BallController : MonoBehaviour
@@ -7,11 +9,12 @@ public class BallController : MonoBehaviour
     private CrosshairController crosshair;
     private Rigidbody rb;
     private Quaternion reqRotation;
+    private bool justHit;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        justHit = false;
         rb = GetComponent<Rigidbody>();
         crosshair = FindFirstObjectByType<CrosshairController>();
 
@@ -37,6 +40,7 @@ public class BallController : MonoBehaviour
         Vector3 finalForce = ForwardPush + UpwardPush;
 
         rb.AddForce(finalForce, ForceMode.Impulse);
+        justHit = true;
     }
 
     public void Spike(Vector3 SpikeDirection)
@@ -44,6 +48,7 @@ public class BallController : MonoBehaviour
         float spikeForce = 2.5f;
 
         rb.AddForce(SpikeDirection * spikeForce, ForceMode.Impulse);
+        justHit = true;
     }
 
     public void frontSet(Vector3 SetDirection)
@@ -59,6 +64,7 @@ public class BallController : MonoBehaviour
         Vector3 finalForce = ForwardPush + UpwardPush;
 
         rb.AddForce(finalForce, ForceMode.Impulse);
+        justHit = true;
 
     }
 
@@ -67,8 +73,65 @@ public class BallController : MonoBehaviour
         float digPower = 2f;
         rb.velocity = Vector3.zero;
         rb.AddForce(Vector3.up * digPower, ForceMode.Impulse);
+
+        justHit = true;
     }
 
+    public void CaclulatePos()
+    {
+        Vector3 originalPos = transform.position;
+        float u = rb.velocity.y;
+        float a = Physics.gravity.y;
+        float s = 0.7f - transform.position.y;
+
+        float A = 0.5f * a;
+        float B = u;
+        float C = -s;
+
+        float discriminant = B * B - 4f * A * C;
+
+        float t1 = (-B + Mathf.Sqrt(discriminant)) / (2f * A);
+        float t2 = (-B - Mathf.Sqrt(discriminant)) / (2f * A);
+
+        float t;
+
+        if (t1 > 0f && t2 > 0f)
+        {
+            t = Mathf.Max(t1, t2);
+        }
+
+        else if (t1 > 0f && t2 < 0f)
+        {
+            t = t1;
+        }
+
+        else if (t1 < 0f && t2 > 0f)
+        {
+            t = t2;
+        }
+
+        else
+        {
+            Debug.Log("didn't work");
+            t = -4f;
+        }
+
+        float vx = rb.velocity.x;
+        float sx = vx * t;
+
+        float vz = rb.velocity.z;
+        float sz = vz * t;
+
+        Vector3 finalPos = Vector3.zero;
+
+        finalPos.x = originalPos.x + sx;
+        finalPos.z = originalPos.z + sz;
+
+        Debug.Log("t1 = " + t1 + " | t2 = " + t2);
+        Debug.Log(finalPos);
+        Debug.Log("Ball Y: " + transform.position.y);
+        Debug.Log("Ball Y velocity: " + u);
+    }
 
     // Update is called once per frame
     void Update()
@@ -77,7 +140,16 @@ public class BallController : MonoBehaviour
         if(Mathf.Abs(height - 5.4f) < 0.1f)
         {
             crosshair.Green();
-            Debug.Log("Green now"); // tells crosshair to go green
         }
+    }
+
+    void FixedUpdate()
+    {
+        if (justHit && rb.velocity.y != 0f)
+        {
+            CaclulatePos(); 
+            justHit = false;
+        }
+
     }
 }

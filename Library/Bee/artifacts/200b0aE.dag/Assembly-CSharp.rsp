@@ -359,6 +359,7 @@
 "Assets/Scripts/CameraController.cs"
 "Assets/Scripts/CharacterMotor.cs"
 "Assets/Scripts/CrosshairController.cs"
+"Assets/Scripts/gameManager.cs"
 "Assets/Scripts/GravityScale.cs"
 "Assets/Scripts/HumanInput.cs"
 "Assets/Scripts/Menu.cs"

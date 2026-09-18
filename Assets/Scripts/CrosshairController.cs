@@ -44,7 +44,6 @@ public class CrosshairController : MonoBehaviour
     public void normal()
     {
         crosshairColour = normalColour;
-        Debug.Log("Back to normal");
     }
 
 }
