@@ -374,8 +374,8 @@
 -analyzer:"/Applications/Unity/Hub/Editor/2022.3.39f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"/Applications/Unity/Hub/Editor/2022.3.39f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/BushGrassBend/Editor/PrepareBushOrGrassMesh.cs"
-"Assets/FREE/Pack_FREE_PartyCharacters/Editor/CharacterPromoWindow.cs"
-"Assets/FREE/Pack_FREE_PartyCharacters/Editor/FreeCharacterCustomizerWindow.cs"
+"Assets/Party Characters/Pack_FREE_PartyCharacters/Editor/CharacterPromoWindow.cs"
+"Assets/Party Characters/Pack_FREE_PartyCharacters/Editor/FreeCharacterCustomizerWindow.cs"
 -langversion:9.0
 /deterministic
 /optimize+

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public class gameManager : MonoBehaviour
@@ -9,13 +10,34 @@ public class gameManager : MonoBehaviour
     public float T2pts;
     public string lastTouch;
 
-
+    public BotInput OpponentAI1Input;
+    public BotInput OpponentAI2Input;
+    public BotMotor OpponentAI1Motor;
+    public BotMotor OpponentAI2Motor;
 
 
   // Start is called before the first frame update
   void Start()
   {
-      touchCount = 0f;
+        touchCount = 0f;
+
+        int OpStart = Random.Range(1, 3);
+        Debug.Log(OpStart);
+
+        if(OpStart == 1)
+        {
+            OpponentAI1Input.setClass("R");
+            OpponentAI2Input.setClass("L");
+        }
+
+        else if (OpStart == 2)
+        {
+            OpponentAI1Input.setClass("L");
+            OpponentAI2Input.setClass("R");
+        }
+
+        OpponentAI1Motor.PosBot();
+        OpponentAI2Motor.PosBot();
   }
 
 

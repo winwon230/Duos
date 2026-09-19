@@ -10,6 +10,7 @@ public class BallController : MonoBehaviour
     private Rigidbody rb;
     private Quaternion reqRotation;
     private bool justHit;
+    //public GameObject locator; locator is ugly
 
     // Start is called before the first frame update
     void Start()
@@ -45,7 +46,8 @@ public class BallController : MonoBehaviour
 
     public void Spike(Vector3 SpikeDirection)
     {
-        float spikeForce = 2.5f;
+        rb.velocity = Vector3.zero;
+        float spikeForce = 3f;
 
         rb.AddForce(SpikeDirection * spikeForce, ForceMode.Impulse);
         justHit = true;
@@ -126,11 +128,10 @@ public class BallController : MonoBehaviour
 
         finalPos.x = originalPos.x + sx;
         finalPos.z = originalPos.z + sz;
+        finalPos.y = 0.075f;
 
-        Debug.Log("t1 = " + t1 + " | t2 = " + t2);
-        Debug.Log(finalPos);
-        Debug.Log("Ball Y: " + transform.position.y);
-        Debug.Log("Ball Y velocity: " + u);
+        //GameObject spawnedLocator = Instantiate(locator, finalPos, Quaternion.identity);
+        //Destroy(spawnedLocator, 3f);
     }
 
     // Update is called once per frame
