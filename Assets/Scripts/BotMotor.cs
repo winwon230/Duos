@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BotMotor : MonoBehaviour
 {
     // Start is called before the first frame update
     private CharacterController controller;
     private Animator animat;
-    private CameraController cameraScript;
     private float gravityMagnitude = 9.81f;
     private Vector3 Gravity;
     private float yVelocity = 0f;
@@ -20,6 +20,7 @@ public class BotMotor : MonoBehaviour
     private float DistanceToBall; // ref in hit ball function
 
     private Vector3 storedDefaultPos;
+    private Coroutine currentCoroutine;
 
     // Start is called before the first frame update
     void Start()
@@ -31,31 +32,59 @@ public class BotMotor : MonoBehaviour
     public void setDefaultPos(Vector3 defaultPos)
     {
         storedDefaultPos = defaultPos;
-        Debug.Log("DefaultPosSet");
     }
 
     public void PosBot()
     {
         transform.position = storedDefaultPos;
-        Debug.Log("positioned");
     }
 
     public void MoveBot(Vector3 Location)
     {
+        Location.y = 0f;
+        if(currentCoroutine != null && Vector3.Distance(transform.position, Location) < 0.15f)
+        {
+            return; // should just tell character not to move once we reach the location
+        }
+
+        if(currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+        }
+
+        currentCoroutine = StartCoroutine(Move(Location));
+    }
+
+    private IEnumerator Move(Vector3 Location)
+    {
         float speed = 5f;
         float rotationSpeed = 5f;
 
-        while(transform.position != Location)
+
+        while(Vector3.Distance(transform.position, Location) > 0.15f)
         {
             Vector3 direction = Location - transform.position;
+            direction.y = 0f;
+
+            Vector3 moveDirection = direction.normalized;
+
+            if(moveDirection != Vector3.zero)
+            {
+
             Quaternion targetRotation = Quaternion.LookRotation(direction);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                
+            }
 
-            controller.Move(transform.forward * speed * Time.deltaTime);
+            controller.Move(moveDirection * speed * Time.deltaTime);
+            yield return null;
         }
 
+        currentCoroutine = null;
     }
+
+
 
     public void RotateBot(Vector3 inputRotation)
     {
@@ -98,7 +127,7 @@ public class BotMotor : MonoBehaviour
     }
     */
 
-    public void HitBall(string HitType, string team)
+    public void HitBall(string HitType, string team, Vector3 direction, float hitMultiplier)
     {
         GameObject[] AllBalls = GameObject.FindGameObjectsWithTag("Volleyball");
         float shortestDistance = Mathf.Infinity;
@@ -118,22 +147,15 @@ public class BotMotor : MonoBehaviour
 
         if (nearestBall != null)
         {
-            Vector3 Origin = transform.position + Vector3.up * 1f;
-            Vector3 RayDirection = nearestBall.transform.position - Origin;
-            float MaxRaycastDistance = 50f;
 
-            RaycastHit HitInfo;
+                BallController ballScript = nearestBall.GetComponent<BallController>();
 
-            if(Physics.Raycast(Origin, RayDirection, out HitInfo, MaxRaycastDistance))
-            {
-                BallController ballScript = HitInfo.collider.GetComponent<BallController>();
-
-                DistanceToBall = HitInfo.distance;
-
+                DistanceToBall = Vector3.Distance(nearestBall.transform.position, transform.position);
                 //Bump here
                 if (DistanceToBall <= 1.5f && ballScript != null && controller.isGrounded && HitType == "Hit")
                 {
-                    ballScript.Bump(transform.forward);
+                    transform.LookAt(direction);
+                    ballScript.Bump(direction, hitMultiplier);
                     if(team == "T1")
                     {
                         gameManager.Touch("T1");
@@ -145,12 +167,11 @@ public class BotMotor : MonoBehaviour
                     }
                 }
                 //Put Spike below
-
                 if (DistanceToBall <= 2f && ballScript != null && controller.isGrounded == false && HitType == "Hit")
                 {
-                    Vector3 SpikeDirection = Camera.main.transform.forward;
+                    transform.LookAt(direction);
 
-                    ballScript.Spike(SpikeDirection);
+                    ballScript.Spike(direction, hitMultiplier);
                     if(team == "T1")
                     {
                         gameManager.Touch("T1");
@@ -166,7 +187,8 @@ public class BotMotor : MonoBehaviour
 
                 if(DistanceToBall <= 1.5f && ballScript != null && HitType == "Front Set")
                 {
-                    ballScript.frontSet(transform.forward);
+                    transform.LookAt(direction);
+                    ballScript.frontSet(direction);
                     if(team == "T1")
                     {
                         gameManager.Touch("T1");
@@ -177,10 +199,10 @@ public class BotMotor : MonoBehaviour
                         gameManager.Touch("T2");
                     }
                 }
+                
 
 
 
-            }
 
         }
     }
@@ -257,7 +279,10 @@ public class BotMotor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(controller.velocity.magnitude == 0f)
+        {
+            animat.Play("Idle");
+        }
 
         if(controller.isGrounded == true && yVelocity < 0f)
         {

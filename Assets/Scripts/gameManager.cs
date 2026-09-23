@@ -9,6 +9,7 @@ public class gameManager : MonoBehaviour
     public float T1pts;
     public float T2pts;
     public string lastTouch;
+    public string lastTouchPlayer;
 
     public BotInput OpponentAI1Input;
     public BotInput OpponentAI2Input;
@@ -22,7 +23,6 @@ public class gameManager : MonoBehaviour
         touchCount = 0f;
 
         int OpStart = Random.Range(1, 3);
-        Debug.Log(OpStart);
 
         if(OpStart == 1)
         {
@@ -42,9 +42,8 @@ public class gameManager : MonoBehaviour
 
 
 
-
-  public void Touch(string team)
-  {
+    public void Touch(string team)
+    {
     if(lastTouch == null)
         {
             lastTouch = team;
@@ -60,7 +59,13 @@ public class gameManager : MonoBehaviour
             touchCount = 1f;
             lastTouch = team;
         }
-  }
+    }
+
+    public void updateLastPlayerTouch(string lastPlayer)
+    {
+        lastTouchPlayer = lastPlayer; // if there are problems this last touch player is assigned before the ball actually gets hit midair
+    }
+
 
 
     public void givePoint(string teamGiven)
@@ -93,6 +98,9 @@ public class gameManager : MonoBehaviour
                 touchCount = 0f;
             }
         }
+
+        OpponentAI1Input.touchInfo(touchCount, lastTouch);
+        OpponentAI2Input.touchInfo(touchCount, lastTouch);
    }
 
 }

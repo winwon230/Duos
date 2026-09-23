@@ -102,8 +102,8 @@
     <Compile Include="Assets/Scripts/CrosshairController.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/ShaderPropAnimator.cs" />
     <Compile Include="Assets/Scripts/PlayButtonScript.cs" />
+    <Compile Include="Assets/Scripts/BotInput.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/CameraController.cs" />
-    <Compile Include="Assets/BotInput.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/Benchmark03.cs" />
     <Compile Include="Assets/Scripts/ShadowController.cs" />
     <Compile Include="Assets/Scripts/CameraController.cs" />

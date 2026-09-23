@@ -122,8 +122,9 @@ public class CharacterMotor : MonoBehaviour
                 //Bump here
                 if (DistanceToBall <= 1.5f && ballScript != null && controller.isGrounded && HitType == "Hit")
                 {
-                    ballScript.Bump(transform.forward);
+                    ballScript.Bump(transform.forward, 1f);
                     gameManager.Touch("T1");
+                    gameManager.updateLastPlayerTouch("T1play");
                 }
                 //Put Spike below
 
@@ -131,8 +132,9 @@ public class CharacterMotor : MonoBehaviour
                 {
                     Vector3 SpikeDirection = Camera.main.transform.forward;
 
-                    ballScript.Spike(SpikeDirection);
+                    ballScript.Spike(SpikeDirection, 1f);
                     gameManager.Touch("T1");
+                    gameManager.updateLastPlayerTouch("T1play");
                 }
 
                 // Front set below
@@ -141,6 +143,7 @@ public class CharacterMotor : MonoBehaviour
                 {
                     ballScript.frontSet(transform.forward);
                     gameManager.Touch("T1");
+                    gameManager.updateLastPlayerTouch("T1play");
                 }
 
 

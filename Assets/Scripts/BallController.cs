@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
+    private BotInput OpponentAI1Input;
+    private BotInput OpponentAI2Input;
     private CrosshairController crosshair;
     private Rigidbody rb;
     private Quaternion reqRotation;
@@ -19,6 +21,12 @@ public class BallController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         crosshair = FindFirstObjectByType<CrosshairController>();
 
+        GameObject bot1 = GameObject.Find("Opponent AI 1");
+        OpponentAI1Input = bot1.GetComponent<BotInput>();
+
+        GameObject bot2 = GameObject.Find("Opponent AI 2");
+        OpponentAI2Input = bot2.GetComponent<BotInput>();
+
     }
 
 
@@ -28,7 +36,7 @@ public class BallController : MonoBehaviour
         transform.rotation = reqRotation;
     }
 
-    public void Bump(Vector3 HitDirection)
+    public void Bump(Vector3 HitDirection, float hitMultiplier)
     {
         float BumpForceZ = 0.5f;
         float BumpForceY = 2f;
@@ -36,32 +44,32 @@ public class BallController : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        Vector3 ForwardPush = HitDirection * BumpForceZ;
+        Vector3 ForwardPush = HitDirection.normalized * BumpForceZ;
         Vector3 UpwardPush = Vector3.up * BumpForceY;
-        Vector3 finalForce = ForwardPush + UpwardPush;
+        Vector3 finalForce = hitMultiplier * (ForwardPush + UpwardPush);
 
         rb.AddForce(finalForce, ForceMode.Impulse);
         justHit = true;
     }
 
-    public void Spike(Vector3 SpikeDirection)
+    public void Spike(Vector3 SpikeDirection, float hitMultiplier)
     {
         rb.velocity = Vector3.zero;
         float spikeForce = 3f;
 
-        rb.AddForce(SpikeDirection * spikeForce, ForceMode.Impulse);
+        rb.AddForce(SpikeDirection.normalized * spikeForce, ForceMode.Impulse);
         justHit = true;
     }
 
     public void frontSet(Vector3 SetDirection)
     {
-        float setForceX = 0.3f;
+        float setForceX = 0.5f;
         float setForceY = 2.5f;
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        Vector3 ForwardPush = SetDirection * setForceX;
+        Vector3 ForwardPush = SetDirection.normalized * setForceX;
         Vector3 UpwardPush = Vector3.up * setForceY;
         Vector3 finalForce = ForwardPush + UpwardPush;
 
@@ -130,6 +138,11 @@ public class BallController : MonoBehaviour
         finalPos.z = originalPos.z + sz;
         finalPos.y = 0.075f;
 
+        if(finalPos.z > 17.31f && finalPos.z < 26.32f && finalPos.x < 4.5f && finalPos.x > -4.5f)
+        {
+            OpponentAI1Input.sendBallPos(finalPos);
+            OpponentAI2Input.sendBallPos(finalPos);
+        }
         //GameObject spawnedLocator = Instantiate(locator, finalPos, Quaternion.identity);
         //Destroy(spawnedLocator, 3f);
     }
