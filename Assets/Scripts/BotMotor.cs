@@ -127,7 +127,7 @@ public class BotMotor : MonoBehaviour
     }
     */
 
-    public void HitBall(string HitType, string team, Vector3 direction, float hitMultiplier)
+    public void HitBall(string HitType, string team, Vector3 direction, float hitMultiplier, string botPos)
     {
         GameObject[] AllBalls = GameObject.FindGameObjectsWithTag("Volleyball");
         float shortestDistance = Mathf.Infinity;
@@ -156,6 +156,7 @@ public class BotMotor : MonoBehaviour
                 {
                     transform.LookAt(direction);
                     ballScript.Bump(direction, hitMultiplier);
+                    gameManager.updateLastPlayerTouch(team + botPos);
                     if(team == "T1")
                     {
                         gameManager.Touch("T1");
@@ -172,6 +173,7 @@ public class BotMotor : MonoBehaviour
                     transform.LookAt(direction);
 
                     ballScript.Spike(direction, hitMultiplier);
+                    gameManager.updateLastPlayerTouch(team + botPos);
                     if(team == "T1")
                     {
                         gameManager.Touch("T1");
@@ -189,6 +191,7 @@ public class BotMotor : MonoBehaviour
                 {
                     transform.LookAt(direction);
                     ballScript.frontSet(direction);
+                    gameManager.updateLastPlayerTouch(team + botPos);
                     if(team == "T1")
                     {
                         gameManager.Touch("T1");

@@ -15,6 +15,11 @@ public class gameManager : MonoBehaviour
     public BotInput OpponentAI2Input;
     public BotMotor OpponentAI1Motor;
     public BotMotor OpponentAI2Motor;
+    public TeammateInput TeammateInput;
+    public BotMotor TeammateMotor;
+    public HumanInput PlayerInput;
+    public CharacterMotor PlayerMotor;
+
 
 
   // Start is called before the first frame update
@@ -28,16 +33,22 @@ public class gameManager : MonoBehaviour
         {
             OpponentAI1Input.setClass("R");
             OpponentAI2Input.setClass("L");
+            PlayerInput.setClass("R");
+            TeammateInput.setClass("L");
         }
 
         else if (OpStart == 2)
         {
             OpponentAI1Input.setClass("L");
             OpponentAI2Input.setClass("R");
+            PlayerInput.setClass("L");
+            TeammateInput.setClass("R");
         }
 
         OpponentAI1Motor.PosBot();
         OpponentAI2Motor.PosBot();
+        TeammateMotor.PosBot();
+        PlayerMotor.posSet();
   }
 
 
@@ -99,8 +110,9 @@ public class gameManager : MonoBehaviour
             }
         }
 
-        OpponentAI1Input.touchInfo(touchCount, lastTouch);
-        OpponentAI2Input.touchInfo(touchCount, lastTouch);
+        OpponentAI1Input.touchInfo(touchCount, lastTouch, lastTouchPlayer);
+        OpponentAI2Input.touchInfo(touchCount, lastTouch, lastTouchPlayer);
+        TeammateInput.touchInfo(touchCount, lastTouch, lastTouchPlayer);
    }
 
 }

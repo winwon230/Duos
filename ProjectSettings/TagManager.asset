@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Volleyball
   - OpponentBot
+  - TeammateBot
   layers:
   - Default
   - TransparentFX

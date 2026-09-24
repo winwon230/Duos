@@ -5,12 +5,13 @@ using UnityEngine;
 public class HumanInput : MonoBehaviour
 {
 
-    private CharacterMotor myMotor;
     private float mouseSensitivity = 5f;
     private float JumpHeight = 2f;
     private float nextHitTime = 0f;
     private float nextDiveTime = 0f;
+    private string pos;
     public CrosshairController crosshairController;
+    public CharacterMotor myMotor;
     [SerializeField] Camera cam;
     [SerializeField] CameraController camcon;
 
@@ -18,8 +19,24 @@ public class HumanInput : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        myMotor = GetComponent<CharacterMotor>();
 
+    }
+
+    public void setClass(string startPos)
+    {
+        if(startPos == "R")
+        {
+            Vector3 defaultPos = new Vector3(-2.09f, 0.075f, 11.99f);
+            myMotor.setDefaultPos(defaultPos);
+            pos = "R";
+        }
+
+        if(startPos == "L")
+        {
+            Vector3 defaultPos = new Vector3(2.09f, 0.075f, 11.99f);
+            myMotor.setDefaultPos(defaultPos);
+            pos = "L";
+        }
     }
 
     // Update is called once per frame

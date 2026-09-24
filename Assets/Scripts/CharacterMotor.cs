@@ -24,6 +24,7 @@ public class CharacterMotor : MonoBehaviour
 
     private GameObject nearestBall = null; // ref in hit ball function
     private float DistanceToBall; // ref in hit ball function
+    private Vector3 storedDefaultPos;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,16 @@ public class CharacterMotor : MonoBehaviour
         controller = GetComponent<CharacterController>();
         animat = GetComponent<Animator>();
         cameraScript = camController.GetComponent<CameraController>();
+    }
+
+     public void setDefaultPos(Vector3 defaultPos)
+    {
+        storedDefaultPos = defaultPos;
+    }
+
+    public void posSet()
+    {
+        transform.position = storedDefaultPos;
     }
 
 

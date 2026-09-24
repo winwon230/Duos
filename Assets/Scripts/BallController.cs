@@ -8,6 +8,7 @@ public class BallController : MonoBehaviour
 {
     private BotInput OpponentAI1Input;
     private BotInput OpponentAI2Input;
+    private TeammateInput teammateInput;
     private CrosshairController crosshair;
     private Rigidbody rb;
     private Quaternion reqRotation;
@@ -27,6 +28,8 @@ public class BallController : MonoBehaviour
         GameObject bot2 = GameObject.Find("Opponent AI 2");
         OpponentAI2Input = bot2.GetComponent<BotInput>();
 
+        GameObject teammate = GameObject.Find("Teammate AI");
+        teammateInput = teammate.GetComponent<TeammateInput>();
     }
 
 
@@ -142,6 +145,11 @@ public class BallController : MonoBehaviour
         {
             OpponentAI1Input.sendBallPos(finalPos);
             OpponentAI2Input.sendBallPos(finalPos);
+        }
+
+        if(finalPos.z > 8.51f && finalPos.z < 17.31f && finalPos.x < 4.5f && finalPos.x > -4.5f)
+        {
+            teammateInput.sendBallPos(finalPos);
         }
         //GameObject spawnedLocator = Instantiate(locator, finalPos, Quaternion.identity);
         //Destroy(spawnedLocator, 3f);

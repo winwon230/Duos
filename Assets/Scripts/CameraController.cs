@@ -123,7 +123,7 @@ public class CameraController : MonoBehaviour
         {
             currentCam = Tpv;
             Vector3 CurrentPos = transform.position;
-            Vector3 TpvOffset = xRotationQuaternion * new Vector3(0f, 0f, -3.33f);
+            Vector3 TpvOffset = xRotationQuaternion * new Vector3(0f, 0f, -4f);
             TpvOffset.y += 1.8f;
             Tpv.transform.position = CurrentPos + transform.TransformDirection(TpvOffset);
 
