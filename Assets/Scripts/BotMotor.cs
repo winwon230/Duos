@@ -23,7 +23,7 @@ public class BotMotor : MonoBehaviour
     private Coroutine currentCoroutine;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         controller = GetComponent<CharacterController>();
         animat = GetComponent<Animator>();
@@ -36,8 +36,72 @@ public class BotMotor : MonoBehaviour
 
     public void PosBot()
     {
-        transform.position = storedDefaultPos;
+        MoveBot(storedDefaultPos);
     }
+
+    public void tpBot()
+    {
+        if(currentCoroutine != null)
+        {
+            StopAllCoroutines();
+            currentCoroutine = null;
+        }
+
+        controller.enabled = false;
+        transform.position = storedDefaultPos;
+        controller.enabled = true;
+    }
+
+    public void motorServe(Vector3 position, Vector3 targetServePosition, string team, string botPos)// given target serve pos already randomised
+    { 
+        Debug.Log("Stored default pos" + storedDefaultPos);
+        controller.enabled = false;
+        transform.position = position;
+        controller.enabled = true; // this is crucial bc character tps without it fsr idk
+        SpawnBall(position);
+        Jump(2.2f);
+
+        Debug.Log("current position:" + transform.position);
+
+        //below is process for actually hitting the ball for serving
+        GameObject[] AllBalls = GameObject.FindGameObjectsWithTag("Volleyball");
+        float shortestDistance = Mathf.Infinity;
+
+
+        foreach (GameObject ball in AllBalls)
+        {
+            DistanceToBall = Vector3.Distance(transform.position, ball.transform.position);
+
+            if(DistanceToBall < shortestDistance)
+            {
+                shortestDistance = DistanceToBall;
+                nearestBall = ball;
+            }
+        }
+        
+        BallController ballScript = nearestBall.GetComponent<BallController>();
+
+
+        if(Vector3.Distance(transform.position, ballScript.transform.position) < 1.5f && ballScript != null)
+        {
+            Vector3 serveDirection = targetServePosition - transform.position;
+            ballScript.Serve(serveDirection, 2f, "Flat"); 
+            
+            gameManager.updateLastPlayerTouch(team + botPos);
+            if(team == "T1")
+            {
+                gameManager.Touch("T1");
+            }
+
+            else if(team == "T2")
+            {
+                gameManager.Touch("T2");
+            }                       
+        }
+
+        Invoke(nameof(PosBot), 1.5f);
+    }
+
 
     public void MoveBot(Vector3 Location)
     {
@@ -76,15 +140,16 @@ public class BotMotor : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
                 
             }
-
-            controller.Move(moveDirection * speed * Time.deltaTime);
+            
+            if(controller != null)
+            {
+                controller.Move(moveDirection * speed * Time.deltaTime);                
+            }
             yield return null;
         }
 
         currentCoroutine = null;
     }
-
-
 
     public void RotateBot(Vector3 inputRotation)
     {
@@ -105,7 +170,7 @@ public class BotMotor : MonoBehaviour
         }
     }
 
-/*
+
     public void SpawnBall(Vector3 Pos) // This needs to be a serving function
     {
 
@@ -125,7 +190,7 @@ public class BotMotor : MonoBehaviour
             rbBall.AddForce(Vector3.up * TossForce, ForceMode.Impulse);
         }
     }
-    */
+    
 
     public void HitBall(string HitType, string team, Vector3 direction, float hitMultiplier, string botPos)
     {
@@ -190,7 +255,7 @@ public class BotMotor : MonoBehaviour
                 if(DistanceToBall <= 1.5f && ballScript != null && HitType == "Front Set")
                 {
                     transform.LookAt(direction);
-                    ballScript.frontSet(direction);
+                    ballScript.frontSet(direction, hitMultiplier);
                     gameManager.updateLastPlayerTouch(team + botPos);
                     if(team == "T1")
                     {
@@ -268,16 +333,6 @@ public class BotMotor : MonoBehaviour
             }
         }
 
-    }
-
-    void OnDrawGizmos()
-    {
-        // Basically describes where the hitbox area for the dive needs to be
-        Gizmos.color = Color.green;
-        Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-        Vector3 localCentre = new Vector3(0f, 1.25f, 1.5f);
-        Vector3 size = new Vector3(2f, 2f, 3f);
-        Gizmos.DrawWireCube(localCentre, size);
     }
     // Update is called once per frame
     void Update()

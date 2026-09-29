@@ -158,7 +158,7 @@ MonoBehaviour:
   Player: {fileID: 5303885203543460844}
   botMotor: {fileID: 25407202}
   lastTouchPlayer: 
-  hitCooldown: 0.5
+  hitCooldown: 0
 --- !u!114 &25407202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,7 +230,7 @@ Transform:
   m_GameObject: {fileID: 25407200}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.69, y: 0.07567358, z: 10.53}
+  m_LocalPosition: {x: 3.325, y: 0.07567358, z: 9.24}
   m_LocalScale: {x: 0.7, y: 0.8, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2253,7 +2253,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 105
+  field of view: 110.2
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -3205,6 +3205,8 @@ MonoBehaviour:
   TeammateMotor: {fileID: 25407202}
   PlayerInput: {fileID: 5303885203543460844}
   PlayerMotor: {fileID: 5303885203543460845}
+  server: 
+  lastServer: 
 --- !u!1 &1324816977
 GameObject:
   m_ObjectHideFlags: 0
@@ -4726,7 +4728,7 @@ Transform:
   m_GameObject: {fileID: 1803830140}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.17, y: 1, z: 7.07}
+  m_LocalPosition: {x: -2.17, y: 1, z: 6.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -27,7 +28,7 @@ public class CharacterMotor : MonoBehaviour
     private Vector3 storedDefaultPos;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         controller = GetComponent<CharacterController>();
         animat = GetComponent<Animator>();
@@ -41,7 +42,9 @@ public class CharacterMotor : MonoBehaviour
 
     public void posSet()
     {
+        controller.enabled = false;
         transform.position = storedDefaultPos;
+        controller.enabled = true;
     }
 
 
@@ -152,7 +155,7 @@ public class CharacterMotor : MonoBehaviour
 
                 if(DistanceToBall <= 1.5f && ballScript != null && HitType == "Front Set")
                 {
-                    ballScript.frontSet(transform.forward);
+                    ballScript.frontSet(transform.forward, 1f);
                     gameManager.Touch("T1");
                     gameManager.updateLastPlayerTouch("T1play");
                 }
@@ -212,20 +215,12 @@ public class CharacterMotor : MonoBehaviour
                 BallController ballScript = hit.GetComponent<BallController>();
                 ballScript.DigBall();
                 gameManager.Touch("T1");
+                gameManager.updateLastPlayerTouch("T1play");
             }
         }
 
     }
 
-    void OnDrawGizmos()
-    {
-        // Basically describes where the hitbox area for the dive needs to be
-        Gizmos.color = Color.green;
-        Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-        Vector3 localCentre = new Vector3(0f, 1.25f, 1.5f);
-        Vector3 size = new Vector3(2f, 2f, 3f);
-        Gizmos.DrawWireCube(localCentre, size);
-    }
     // Update is called once per frame
     void Update()
     {

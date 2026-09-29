@@ -19,6 +19,7 @@ public class TeammateInput : MonoBehaviour
     private Vector3 predictedBallPos;
     private Vector3 defaultPos;
     // Start is called before the first frame update
+    private Vector3 targetServePosition;
     void Awake()
     {
         botMotor = GetComponent<BotMotor>();
@@ -77,9 +78,23 @@ public class TeammateInput : MonoBehaviour
         
     }
 
+    public void requestServe(string server)
+    {
+        Vector3 servePos = defaultPos;
+        servePos.z = 7f;
+
+        if (server.StartsWith("T1"))
+        {
+            targetServePosition = new Vector3(Random.Range(-4.5f, 4.5f), 2.86f, Random.Range(19f, 25f)); //change this for the opponents
+        }
+
+        botMotor.motorServe(servePos, targetServePosition, botTeam, botPos);
+    }
+
     public float hitCooldown = 0.5f;
     private float hitMultiplier = 1f;
     private Rigidbody rb;
+    private Vector3 randomPos;
     // Update is called once per frame
     void Update()
     {
@@ -138,7 +153,7 @@ public class TeammateInput : MonoBehaviour
         if(Vector3.Distance(transform.position, predictedBallPos) <= 0.3f && lastTouchTeam == "T1" && touchCount == 1f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos) //second touch/set
         {
             Vector3 otherBotPos = Player.transform.position;
-            otherBotPos.z += 3f;
+            otherBotPos.z += 3.5f;
 
             Vector3 hitDirection = otherBotPos - transform.position;
             botMotor.HitBall("Front Set", botTeam, hitDirection, 1f, botPos);
@@ -149,23 +164,24 @@ public class TeammateInput : MonoBehaviour
         {
             if(transform.position.z < 17.31f)// issue is here bc teammate has diff z coords
             {
-                Vector3 randomPos = new Vector3(0, 0.26f, 26f);
-                randomPos.x = Random.Range(4.5f, -4.5f);
+                Vector3 randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.26f, 26f);
                 
                 Vector3 hitDirection = randomPos - transform.position;
                 hitMultiplier = 1.6f;
                 botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
             }
 
-            if(transform.position.z > 14.02f && transform.position.z < 17.31f && nearestBall.transform.position.y >= 5f && rb.velocity.y < 0f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos)
+            if(transform.position.z > 14.02f && transform.position.z < 17.31f && nearestBall.transform.position.y >= 4.9f && rb.velocity.y < 0f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos)
             {
-                Vector3 randomPos = new Vector3(0, 0.26f, 26f);
-                randomPos.x = Random.Range(4.5f, -4.5f);
-                Vector3 hitDirection = randomPos - transform.position;
+                randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.26f, 26f);
+                float distanceFromNet = 17.31f - transform.position.z;
 
-                hitMultiplier = Random.Range(0.6f, 2.4f);
+                randomPos.z = 17.31f + distanceFromNet * 2.4f;
+                Debug.Log(randomPos + "Teammate");
+
+                hitMultiplier = Random.Range(0.7f, 1.7f);
                 botMotor.Jump(2.35f);
-                StartCoroutine(spikeAfterJump(hitDirection)); // reference below
+                StartCoroutine(spikeAfterJump()); // reference below
                 hitCooldown = 0.25f;
             }
         }
@@ -173,9 +189,11 @@ public class TeammateInput : MonoBehaviour
     }
 
 
-    private IEnumerator spikeAfterJump(Vector3 hitDirection)
+    private IEnumerator spikeAfterJump()
     {
-        yield return new WaitForSeconds(0.65f);
+        yield return new WaitForSeconds(0.72f);
+        Vector3 hitDirection = randomPos - transform.position;
+        Debug.Log("tried to spike after delay");
         botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
         manager.updateLastPlayerTouch(botTeam + botPos);
     }

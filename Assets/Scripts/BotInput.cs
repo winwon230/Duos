@@ -20,6 +20,7 @@ public class BotInput : MonoBehaviour
  // just hit may not be relevant?
     private Vector3 predictedBallPos;
     private Vector3 defaultPos;
+    private Vector3 targetServePosition;
 
     // Start is called before the first frame update
     void Awake()
@@ -41,7 +42,7 @@ public class BotInput : MonoBehaviour
             botPos = "R";
         }
 
-        if(startPos == "L" && botTeam == "T2")
+        else if(startPos == "L" && botTeam == "T2")
         {
             defaultPos = new Vector3(2.09f, 0.075f, 22.8f);
             botMotor.setDefaultPos(defaultPos);
@@ -56,8 +57,26 @@ public class BotInput : MonoBehaviour
         lastTouchPlayer = lastPlayer;
     }
 
+    public void requestServe(string server)
+    {
+        Vector3 servePos = defaultPos;
+        servePos.z = 27.62f;
+
+        if (server.StartsWith("T2"))
+        {
+            targetServePosition = new Vector3(Random.Range(-4.5f, 4.5f), 1f, Random.Range(9.62f, 15.62f)); //change this for the opponents
+        }
+
+        botMotor.motorServe(servePos, targetServePosition, botTeam, botPos);
+    }    
+
     public void sendBallPos(Vector3 finalPos) // this pos is already given as within the correct area of the court
     {
+            if(hitCooldown > 0f && !lastTouchPlayer.StartsWith("T1"))
+        {
+            return;
+        }
+
             float indvDistance = Vector3.Distance(transform.position, finalPos);
             float teammateDistance = Vector3.Distance(otherBot.transform.position, finalPos);
 
@@ -84,6 +103,7 @@ public class BotInput : MonoBehaviour
     public float hitCooldown = 0.5f;
     private float hitMultiplier = 1f;
     private Rigidbody rb;
+    private Vector3 randomPos;
     // Update is called once per frame
     void Update()
     {
@@ -142,7 +162,7 @@ public class BotInput : MonoBehaviour
         if(Vector3.Distance(transform.position, predictedBallPos) <= 0.3f && lastTouchTeam == "T2" && touchCount == 1f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos) //second touch/set
         {
             Vector3 otherBotPos = otherBot.transform.position;
-            otherBotPos.z -= 3f;
+            otherBotPos.z -= 3.5f;
 
             Vector3 hitDirection = otherBotPos - transform.position;
             botMotor.HitBall("Front Set", botTeam, hitDirection, 1f, botPos);
@@ -153,23 +173,29 @@ public class BotInput : MonoBehaviour
         {
             if(transform.position.z > 20f)
             {
-                Vector3 randomPos = new Vector3(0, 0.26f, 8.35f);
-                randomPos.x = Random.Range(4.5f, -4.5f);
+                randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.26f, 8.35f);
                 
                 Vector3 hitDirection = randomPos - transform.position;
                 hitMultiplier = 1.6f;
                 botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
             }
 
-            if(transform.position.z < 20.6f && transform.position.z > 17.31f && nearestBall.transform.position.y >= 5f && rb.velocity.y < 0f)
+            if(transform.position.z < 20.6f && transform.position.z > 17.31f && nearestBall.transform.position.y >= 4.8f && rb.velocity.y == 0f)
             {
-                Vector3 randomPos = new Vector3(0, 0.26f, 8.35f);
-                randomPos.x = Random.Range(4.5f, -4.5f);
-                Vector3 hitDirection = randomPos - transform.position;
+                randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.26f, 8.35f);
 
-                hitMultiplier = Random.Range(0.6f, 2.4f);
-                botMotor.Jump(2.35f);
-                StartCoroutine(spikeAfterJump(hitDirection)); // reference below
+                float distanceFromNet = transform.position.z - 17.31f;
+
+                randomPos.z = 17.31f - distanceFromNet * 2.4f;
+                if(randomPos.z > 14f)
+                {
+                    randomPos.y = 2f; // this should loosen angle to prevent hitting straight into the net
+                }
+                Debug.Log(randomPos + "Opponent");
+
+                hitMultiplier = Random.Range(0.7f, 1.7f);
+                botMotor.Jump(2.4f);
+                StartCoroutine(spikeAfterJump()); // reference below
                 hitCooldown = 0.25f;
             }
         }
@@ -177,11 +203,21 @@ public class BotInput : MonoBehaviour
     }
 
 
-    private IEnumerator spikeAfterJump(Vector3 hitDirection)
+    private IEnumerator spikeAfterJump()
     {
-        yield return new WaitForSeconds(0.65f);
+        //yield return new WaitForSeconds(0.56f); // problematic and doesn't seem to work consistently
+
+        /*if(nearestBall.transform.position.y < 4f && nearestBall.transform.position.y > 3.5f && rb.velocity.y < 0f)
+        {
+            Vector3 hitDirection = randomPos - transform.position;
+            botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
+        }*/
+
+        yield return new WaitUntil(()=> nearestBall != null && nearestBall.transform.position.y < 5.3f && Vector3.Distance(transform.position, nearestBall.transform.position) < 1.5f);
+        Vector3 hitDirection = randomPos - transform.position;
         botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
-        manager.updateLastPlayerTouch(botTeam + botPos);
+
+        Debug.DrawLine(transform.position, randomPos, Color.magenta, 2f);
     }
 
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class GravityScale : MonoBehaviour
 {
 
-    private float GravScale = 120f;
+    private float GravScale = 9.81f;
     private Rigidbody rb;
 
     // Start is called before the first frame update
@@ -15,8 +15,8 @@ public class GravityScale : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        rb.AddForce(0f, -GravScale * Time.deltaTime, 0f);
+        rb.AddForce(Vector3.down * GravScale * rb.mass);
     }
 }

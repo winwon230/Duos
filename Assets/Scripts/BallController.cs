@@ -16,10 +16,13 @@ public class BallController : MonoBehaviour
     //public GameObject locator; locator is ugly
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         justHit = false;
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();        
+    }
+    void Start()
+    {
         crosshair = FindFirstObjectByType<CrosshairController>();
 
         GameObject bot1 = GameObject.Find("Opponent AI 1");
@@ -49,7 +52,17 @@ public class BallController : MonoBehaviour
 
         Vector3 ForwardPush = HitDirection.normalized * BumpForceZ;
         Vector3 UpwardPush = Vector3.up * BumpForceY;
-        Vector3 finalForce = hitMultiplier * (ForwardPush + UpwardPush);
+        Vector3 finalForce;
+
+        if(hitMultiplier == 1.6f) // this is specifically bc the over shot goes too high
+        {
+            finalForce = hitMultiplier * 1.3f * ForwardPush + hitMultiplier * 0.8f * UpwardPush;
+        }
+
+        else
+        {
+            finalForce = hitMultiplier * (ForwardPush + UpwardPush);
+        }
 
         rb.AddForce(finalForce, ForceMode.Impulse);
         justHit = true;
@@ -58,16 +71,27 @@ public class BallController : MonoBehaviour
     public void Spike(Vector3 SpikeDirection, float hitMultiplier)
     {
         rb.velocity = Vector3.zero;
-        float spikeForce = 3f;
+        float spikeForce = 3f * hitMultiplier;
 
         rb.AddForce(SpikeDirection.normalized * spikeForce, ForceMode.Impulse);
         justHit = true;
     }
 
-    public void frontSet(Vector3 SetDirection)
+    public void Serve(Vector3 ServeDirection, float hitMultiplier, string serveType)
+    {
+        rb.velocity = Vector3.zero;
+
+        if(serveType == "Flat")
+        {
+            rb.AddForce(ServeDirection.normalized * hitMultiplier, ForceMode.Impulse);   
+        }
+        justHit = true;
+    }
+
+    public void frontSet(Vector3 SetDirection, float hitMultiplier)
     {
         float setForceX = 0.5f;
-        float setForceY = 2.5f;
+        float setForceY = 2.65f;
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
@@ -76,7 +100,7 @@ public class BallController : MonoBehaviour
         Vector3 UpwardPush = Vector3.up * setForceY;
         Vector3 finalForce = ForwardPush + UpwardPush;
 
-        rb.AddForce(finalForce, ForceMode.Impulse);
+        rb.AddForce(finalForce * hitMultiplier, ForceMode.Impulse);
         justHit = true;
 
     }
@@ -125,7 +149,6 @@ public class BallController : MonoBehaviour
 
         else
         {
-            Debug.Log("didn't work");
             t = -4f;
         }
 
