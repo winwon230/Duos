@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEditor.Build;
 using UnityEngine;
@@ -12,7 +13,9 @@ public class BallController : MonoBehaviour
     private CrosshairController crosshair;
     private Rigidbody rb;
     private Quaternion reqRotation;
+    private gameManager gameManager;
     private bool justHit;
+    private float groundDetectionTimer = 1.5f;
     //public GameObject locator; locator is ugly
 
     // Start is called before the first frame update
@@ -33,6 +36,7 @@ public class BallController : MonoBehaviour
 
         GameObject teammate = GameObject.Find("Teammate AI");
         teammateInput = teammate.GetComponent<TeammateInput>();
+        gameManager = FindFirstObjectByType<gameManager>();
     }
 
 
@@ -178,14 +182,50 @@ public class BallController : MonoBehaviour
         //Destroy(spawnedLocator, 3f);
     }
 
+    private void OnCollisionEnter(Collision collision) // need to code for if the ball is out as well
+    {
+        if (collision.gameObject.CompareTag("VolleyballCourtCollider") && groundDetectionTimer <= 0f)
+        {
+            if(transform.position.z < 17.31f && transform.position.z > 8.323f) // ball is IN at T1 side
+            {
+                gameManager.ballGroundHit("T1" , "VolleyballCourt");
+            }
+            else if(transform.position.z > 17.31f && transform.position.z < 26.297f) //ball is IN at T2 side
+            {
+                gameManager.ballGroundHit("T2", "VolleyballCourt");
+            }
+            groundDetectionTimer = 1.5f;
+        }
+
+        else if(collision.gameObject.CompareTag("Ground") && groundDetectionTimer <= 0f)
+        {
+            if(transform.position.z < 17.31f) // ball is OUT at T1 side
+            {
+                gameManager.ballGroundHit("T1", "Ground");
+            }
+            else if(transform.position.z > 17.31f) //ball is OUT at T2 side
+            {
+                gameManager.ballGroundHit("T2", "Ground");
+            }    
+            groundDetectionTimer = 1.5f;        
+        }
+
+        else
+        {
+            return;
+        }
+    }
     // Update is called once per frame
     void Update()
     {
+        groundDetectionTimer -= Time.deltaTime;
         float height = transform.position.y;
         if(Mathf.Abs(height - 5.4f) < 0.1f)
         {
             crosshair.Green();
         }
+
+        
     }
 
     void FixedUpdate()

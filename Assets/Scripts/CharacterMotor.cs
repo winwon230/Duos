@@ -83,7 +83,6 @@ public class CharacterMotor : MonoBehaviour
 
     public void SpawnBall(Vector3 Pos)
     {
-
         GameObject SpawnedBall = Instantiate(volleyball, Pos + transform.forward, Quaternion.identity);
         Rigidbody rbBall = SpawnedBall.GetComponent<Rigidbody>();
         GameObject SpawnedShadow = Instantiate(Shadow, Pos + transform.forward, Quaternion.Euler(90f, 0f, 0f));

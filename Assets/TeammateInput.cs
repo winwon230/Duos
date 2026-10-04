@@ -20,6 +20,7 @@ public class TeammateInput : MonoBehaviour
     private Vector3 defaultPos;
     // Start is called before the first frame update
     private Vector3 targetServePosition;
+    private bool spiking = false;
     void Awake()
     {
         botMotor = GetComponent<BotMotor>();
@@ -78,17 +79,14 @@ public class TeammateInput : MonoBehaviour
         
     }
 
-    public void requestServe(string server)
+    public void requestServe()
     {
         Vector3 servePos = defaultPos;
         servePos.z = 7f;
 
-        if (server.StartsWith("T1"))
-        {
-            targetServePosition = new Vector3(Random.Range(-4.5f, 4.5f), 2.86f, Random.Range(19f, 25f)); //change this for the opponents
-        }
+        targetServePosition = new Vector3(Random.Range(-4.5f, 4.5f), 7f, Random.Range(19f, 25f)); //change this for the opponents
 
-        botMotor.motorServe(servePos, targetServePosition, botTeam, botPos);
+        botMotor.motorServe(servePos, targetServePosition, botTeam, botPos, "Flat"); // change here when adding different serve variants
     }
 
     public float hitCooldown = 0.5f;
@@ -127,14 +125,13 @@ public class TeammateInput : MonoBehaviour
             {
                 botMotor.MoveBot(defaultPos);   
             }
-        }
 
         if(nearestBall != null)
         {
             rb = nearestBall.GetComponent<Rigidbody>();   
         }
 
-        if(Vector3.Distance(transform.position, predictedBallPos) <= 0.3f && lastTouchTeam == "T2" && hitCooldown <=0f && lastTouchPlayer != botTeam + botPos) //code for first touch (bump)
+        if(Vector3.Distance(transform.position, predictedBallPos) <= 1.5f && lastTouchTeam == "T2" && hitCooldown <=0f && lastTouchPlayer != botTeam + botPos) //code for first touch (bump)
         {
             if (distanceToTeammate <= 3f)
             {
@@ -147,22 +144,44 @@ public class TeammateInput : MonoBehaviour
             }
             Vector3 hitDirection = Player.transform.position - transform.position;
             botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos); //don't add touches bc its alr specified in botmotor
-            hitCooldown = 0.25f;
+            hitCooldown = 0.05f;
         }
 
-        if(Vector3.Distance(transform.position, predictedBallPos) <= 0.3f && lastTouchTeam == "T1" && touchCount == 1f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos) //second touch/set
+        if(Vector3.Distance(transform.position, predictedBallPos) <= 1.5f && lastTouchTeam == "T1" && touchCount == 1f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos) //second touch/set
         {
             Vector3 otherBotPos = Player.transform.position;
             otherBotPos.z += 3.5f;
 
             Vector3 hitDirection = otherBotPos - transform.position;
             botMotor.HitBall("Front Set", botTeam, hitDirection, 1f, botPos);
-            hitCooldown = 0.25f;
+            hitCooldown = 0.05f;
         }
 
-        if(Vector3.Distance(transform.position, predictedBallPos) <= 0.3f && lastTouchTeam == "T1" && touchCount == 2f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos) //3rd touch(spike/bump)
+        if(Vector3.Distance(transform.position, predictedBallPos) <= 1.5f && lastTouchTeam == "T1" && touchCount == 2f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos) //3rd touch(spike/bump)
         {
-            if(transform.position.z < 17.31f)// issue is here bc teammate has diff z coords
+            if(transform.position.z >= 14.02f && transform.position.z < 17.31f && nearestBall.transform.position.y >= 5.2f && rb.velocity.y <= 0f && !spiking)
+            {
+                Debug.Log("T1 SPIKE CONDITION PASSED");
+                randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.6f, 26f);
+                float distanceFromNet = 17.31f - transform.position.z;
+
+                randomPos.z = 17.31f + distanceFromNet * 2.4f;
+                if(randomPos.z > 22.62f)
+                {
+                    randomPos.y = 2.8f; // this should loosen angle to prevent hitting straight into the net
+                    hitMultiplier = Random.Range(0.8f, 1.1f);
+                }
+
+                else
+                {
+                    hitMultiplier = Random.Range(1f, 1.8f);                    
+                }
+                spiking = true;
+                botMotor.Jump(2.4f);
+                StartCoroutine(spikeAfterJump()); // reference below
+            }
+
+            else if(transform.position.z < 17.31f)// issue is here bc teammate has diff z coords
             {
                 Vector3 randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.26f, 26f);
                 
@@ -171,19 +190,8 @@ public class TeammateInput : MonoBehaviour
                 botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
             }
 
-            if(transform.position.z > 14.02f && transform.position.z < 17.31f && nearestBall.transform.position.y >= 4.9f && rb.velocity.y < 0f && hitCooldown <= 0f && lastTouchPlayer != botTeam + botPos)
-            {
-                randomPos = new Vector3(Random.Range(-4.5f, 4.5f), 0.26f, 26f);
-                float distanceFromNet = 17.31f - transform.position.z;
-
-                randomPos.z = 17.31f + distanceFromNet * 2.4f;
-                Debug.Log(randomPos + "Teammate");
-
-                hitMultiplier = Random.Range(0.7f, 1.7f);
-                botMotor.Jump(2.35f);
-                StartCoroutine(spikeAfterJump()); // reference below
-                hitCooldown = 0.25f;
-            }
+            hitCooldown = 0.1f;
+        }
         }
 
     }
@@ -191,11 +199,11 @@ public class TeammateInput : MonoBehaviour
 
     private IEnumerator spikeAfterJump()
     {
-        yield return new WaitForSeconds(0.72f);
+        yield return new WaitUntil(()=> nearestBall != null && nearestBall.transform.position.y <= 5.4f && Vector3.Distance(transform.position, nearestBall.transform.position) < 1.5f && hitCooldown <= 0f);
         Vector3 hitDirection = randomPos - transform.position;
-        Debug.Log("tried to spike after delay");
         botMotor.HitBall("Hit", botTeam, hitDirection, hitMultiplier, botPos);
-        manager.updateLastPlayerTouch(botTeam + botPos);
+        Debug.Log("hit the ball");
+        spiking = false;
     }
 
 }

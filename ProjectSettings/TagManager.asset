@@ -8,6 +8,9 @@ TagManager:
   - OpponentBot
   - TeammateBot
   - Shadow
+  - VolleyballCourt
+  - VolleyballCourtCollider
+  - Ground
   layers:
   - Default
   - TransparentFX

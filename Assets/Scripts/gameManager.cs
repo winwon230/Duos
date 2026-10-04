@@ -130,12 +130,12 @@ public class gameManager : MonoBehaviour
             {
                 if(servePlayerNumber == 1)
                 {
-                    server = "T2OpponentAI1";
+                    server = "T1Player";
                 }
 
                 else if(servePlayerNumber == 2)
                 {
-                    server = "T2OpponentAI2";
+                    server = "T1Teammate";
                 }
             }
         }
@@ -169,10 +169,9 @@ public class gameManager : MonoBehaviour
                 } 
             }
             
-        Invoke(nameof(internalServeRequest), 5f);
         }
 
-
+        Invoke(nameof(internalServeRequest), 4f);
 
     }
 
@@ -186,18 +185,20 @@ public class gameManager : MonoBehaviour
 
         else if(server == "T1Teammate")
         {
-            TeammateInput.requestServe(server);
+            TeammateInput.requestServe();
         }
 
         else if(server == "T2OpponentAI1")
         {
-            OpponentAI1Input.requestServe(server);
+            OpponentAI1Input.requestServe();
         }
 
         else if(server == "T2OpponentAI2")
         {
-            OpponentAI2Input.requestServe(server);
+            OpponentAI2Input.requestServe();
         }
+
+        lastTouchPlayer = server;
     }
 
 
@@ -225,7 +226,38 @@ public class gameManager : MonoBehaviour
         lastTouchPlayer = lastPlayer; // if there are problems this last touch player is assigned before the ball actually gets hit midair
     }
 
+    public void ballGroundHit(string side, string groundType)
+    {
+            Debug.Log("GROUND HIT | side = " + side +
+              " | groundType = " + groundType +
+              " | lastTouch = " + lastTouch +
+              " | lastTouchPlayer = " + lastTouchPlayer);
+        if(groundType == "VolleyballCourt") // if ball goes IN
+        {
+            if(side == "T1")
+            {
+                givePoint("T2");
+            }
 
+            else if(side == "T2")
+            {
+                givePoint("T1");
+            }
+        }
+
+        else if(groundType == "Ground") // if ball goes OUT
+        {
+                if (lastTouchPlayer.StartsWith("T1"))
+                {
+                    givePoint("T2");
+                }
+
+                else if (lastTouchPlayer.StartsWith("T2"))
+                {
+                    givePoint("T1");
+                }
+        }
+    }
 
     public void givePoint(string teamGiven) // need to make this apply for matches only
     {

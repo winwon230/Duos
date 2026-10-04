@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -52,16 +53,15 @@ public class BotMotor : MonoBehaviour
         controller.enabled = true;
     }
 
-    public void motorServe(Vector3 position, Vector3 targetServePosition, string team, string botPos)// given target serve pos already randomised
+    // below(serve) is standard so all bots use the same one
+    public void motorServe(Vector3 position, Vector3 targetServePosition, string team, string botPos, string serveType)// given target serve pos already randomised
     { 
-        Debug.Log("Stored default pos" + storedDefaultPos);
         controller.enabled = false;
         transform.position = position;
         controller.enabled = true; // this is crucial bc character tps without it fsr idk
         SpawnBall(position);
-        Jump(2.2f);
 
-        Debug.Log("current position:" + transform.position);
+        Invoke(nameof(serveJump), 0.86f);
 
         //below is process for actually hitting the ball for serving
         GameObject[] AllBalls = GameObject.FindGameObjectsWithTag("Volleyball");
@@ -80,12 +80,23 @@ public class BotMotor : MonoBehaviour
         }
         
         BallController ballScript = nearestBall.GetComponent<BallController>();
+        Rigidbody rb = nearestBall.GetComponent<Rigidbody>();
 
+        StartCoroutine(ServeAfterJump(targetServePosition, team, botPos, serveType));
 
-        if(Vector3.Distance(transform.position, ballScript.transform.position) < 1.5f && ballScript != null)
+        Invoke(nameof(PosBot), 3f);
+    }
+
+    private IEnumerator ServeAfterJump(Vector3 targetServePosition, string team, string botPos, string serveType)
+    {
+        BallController ballScript = nearestBall.GetComponent<BallController>();
+        Rigidbody rb = nearestBall.GetComponent<Rigidbody>();
+
+        if(nearestBall != null)
         {
+            yield return new WaitUntil(()=> Vector3.Distance(transform.position, nearestBall.transform.position) < 1.5f && ballScript != null && rb.velocity.y <= 0f && nearestBall.transform.position.y > 1f);
             Vector3 serveDirection = targetServePosition - transform.position;
-            ballScript.Serve(serveDirection, 2f, "Flat"); 
+            ballScript.Serve(serveDirection, 3.8f, "Flat"); // change multiplier and the final "Flat" string when adding the new serve type
             
             gameManager.updateLastPlayerTouch(team + botPos);
             if(team == "T1")
@@ -96,10 +107,16 @@ public class BotMotor : MonoBehaviour
             else if(team == "T2")
             {
                 gameManager.Touch("T2");
-            }                       
+            }  
         }
+        
+    }
 
-        Invoke(nameof(PosBot), 1.5f);
+    public void serveJump()
+    {
+        float Power = Mathf.Sqrt(2.2f * 1.7f * gravityMagnitude);
+        yVelocity = Power;
+        animat.Play("jump");        
     }
 
 

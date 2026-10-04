@@ -356,6 +356,7 @@
 -analyzer:"/Applications/Unity/Hub/Editor/2022.3.39f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"/Applications/Unity/Hub/Editor/2022.3.39f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/GameData.cs"
+"Assets/GooberSplashScript.cs"
 "Assets/Scripts/BallController.cs"
 "Assets/Scripts/BotInput.cs"
 "Assets/Scripts/BotMotor.cs"
@@ -403,6 +404,7 @@
 "Assets/TextMesh Pro/Examples & Extras/Scripts/VertexShakeB.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/VertexZoom.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/WarpTextExample.cs"
+"Assets/Visuals/WaveScroller.cs"
 -langversion:9.0
 /deterministic
 /optimize+
