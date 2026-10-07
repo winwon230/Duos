@@ -166,10 +166,11 @@ public class TeammateInput : MonoBehaviour
                 float distanceFromNet = 17.31f - transform.position.z;
 
                 randomPos.z = 17.31f + distanceFromNet * 2.4f;
+                Debug.Log("Teammate target Z pos (check if greater than 22.62)" + randomPos.z);
                 if(randomPos.z > 22.62f)
                 {
                     randomPos.y = 2.8f; // this should loosen angle to prevent hitting straight into the net
-                    hitMultiplier = Random.Range(0.8f, 1.1f);
+                    hitMultiplier = Random.Range(0.7f, 1f);
                 }
 
                 else

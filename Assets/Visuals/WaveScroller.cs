@@ -4,9 +4,9 @@ using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 using UnityEngine.UI;
 
-/*public class WaveScroller : MonoBehaviour
+public class WaveScroller : MonoBehaviour
 {
-    private float scrollSpeed = 0.2f;
+    public float scrollSpeed = 0.1f;
     private RawImage rawImage;
     private Material mat;
     // Start is called before the first frame update
@@ -28,6 +28,11 @@ using UnityEngine.UI;
     // Update is called once per frame
     void Update()
     {
-        
+        if(mat != null)
+        {
+            Vector2 offset = mat.mainTextureOffset;
+            offset.x += scrollSpeed * Time.deltaTime;
+            mat.mainTextureOffset = offset;            
+        }
     }
-}*/
+}

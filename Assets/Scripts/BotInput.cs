@@ -181,10 +181,11 @@ public class BotInput : MonoBehaviour
                 float distanceFromNet = transform.position.z - 17.31f;
 
                 randomPos.z = 17.31f - distanceFromNet * 2.4f;
+                Debug.Log("Bot target z pos (check if < 12)" + randomPos.z);
                 if(randomPos.z < 12f)
                 {
                     randomPos.y = 2.8f; // this should loosen angle to prevent hitting straight into the net
-                    hitMultiplier = Random.Range(0.8f, 1.1f);
+                    hitMultiplier = Random.Range(0.7f, 1f);
                 }
 
                 else
