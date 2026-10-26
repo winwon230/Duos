@@ -6,9 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
+    path: Assets/Scenes/Splash Screen.unity
     guid: 32ac13a25d8b7421f9b6ac1374dc1dc1
   - enabled: 1
-    path: Assets/Scenes/Volleyball.unity
+    path: Assets/Scenes/VB Tutorial.unity
+    guid: c2b418ec37db441388419dba0a4651d3
+  - enabled: 1
+    path: Assets/Scenes/VB Indoor.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/VB Beach.unity
+    guid: bb3979cfcaf8d4a689961bcb452450fa
+  - enabled: 1
+    path: Assets/Scenes/VB Forest.unity
+    guid: 73309953339a24248bf0028a5db1c8dc
   m_configObjects: {}
