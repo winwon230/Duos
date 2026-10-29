@@ -69,6 +69,9 @@ public class gameManager : MonoBehaviour
     public TMP_Text winText;
     public GameObject finishMenu;
     public GameObject pauseMenu;
+    public TMP_Text gameStartTXT;
+    public TMP_Text t1ServingTXT;
+    public TMP_Text t2ServingTXT;
 
     private SceneLoader loader;
 
@@ -122,6 +125,18 @@ settingsManager = FindFirstObjectByType<GameSettingsManager>();
         {
             finishMenu.SetActive(false);
         }
+        if(gameStartTXT.gameObject != null)
+        {
+            gameStartTXT.gameObject.SetActive(false);
+        }
+        if(t1ServingTXT.gameObject != null)
+        {
+            t1ServingTXT.gameObject.SetActive(false);
+        }
+        if(t2ServingTXT.gameObject != null)
+        {
+            t2ServingTXT.gameObject.SetActive(false);
+        }
         TutorialTextGroup = GameObject.Find("TutorialTextGroup");
         TutorialTextObject = GameObject.Find("InstructionsText");
         if(TutorialTextObject != null)
@@ -161,7 +176,10 @@ settingsManager = FindFirstObjectByType<GameSettingsManager>();
             ptsInSet = settingsManager.ptsToWinSet;
             noSets = settingsManager.noSets;
             winByTwo = settingsManager.winByTwo;
-            setsToWin = Mathf.CeilToInt(noSets / 2f);            
+            setsToWin = Mathf.CeilToInt(noSets / 2f); 
+            StartCoroutine(showStartText());
+            
+
         }
         else if(settingsManager.currentGameMode == GameSettingsManager.GameMode.VBTutorial)
         {
@@ -170,6 +188,13 @@ settingsManager = FindFirstObjectByType<GameSettingsManager>();
         }
         loader = FindFirstObjectByType<SceneLoader>();
   }
+
+    private IEnumerator showStartText()
+    {
+        gameStartTXT.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        gameStartTXT.gameObject.SetActive(false);
+    }
 
     private IEnumerator startTutorial() //Tutorial is complete now
     {
@@ -373,6 +398,16 @@ settingsManager = FindFirstObjectByType<GameSettingsManager>();
                 server = "T2OpponentAI2";
             }
         }
+        if (server.StartsWith("T1"))
+        {
+            t1ServingTXT.gameObject.SetActive(true);
+            t2ServingTXT.gameObject.SetActive(false);
+        }
+        else if (server.StartsWith("T2"))
+        {
+            t1ServingTXT.gameObject.SetActive(false);
+            t2ServingTXT.gameObject.SetActive(true);
+        }
 
 
         Invoke(nameof(internalServeRequest), 5f);
@@ -439,6 +474,16 @@ settingsManager = FindFirstObjectByType<GameSettingsManager>();
                 } 
             }
             
+        }
+        if (server.StartsWith("T1"))
+        {
+            t1ServingTXT.gameObject.SetActive(true);
+            t2ServingTXT.gameObject.SetActive(false);
+        }
+        else if (server.StartsWith("T2"))
+        {
+            t1ServingTXT.gameObject.SetActive(false);
+            t2ServingTXT.gameObject.SetActive(true);
         }
 
         Invoke(nameof(internalServeRequest), 4f);
