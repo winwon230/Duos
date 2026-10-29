@@ -9,6 +9,9 @@ This game is my StarDance Project, which is a programme for 13-18 year olds glob
 
 It is written in C# (Unity coding language).
 
+<img width="678" height="379" alt="Screenshot 2026-10-29 at 5 01 27 pm" src="https://github.com/user-attachments/assets/9f46cc03-8d4b-4fc1-ad5b-6749d799efd8" />
+
+
 ## Current features
 - Basic 3D Physics-based volleyball
 - Fully functional offline volleyball (other modes are unavailable) with a tutorial and friendly match mode
@@ -21,6 +24,9 @@ It is written in C# (Unity coding language).
 - Local multiplayer (will be implemented before release)
 
 ## Try it/download from GitHub
+1. Download the zip file from the GitHub releases page on this repo
+2. Extract the zip file on your computer (it should work for Mac, Windows, and Linux)
+3. Open the actual game file, and you should be able to play :) Enjoy!
 
 ## Controls - For volleyball (which is the only currently available mode)
 - WASD Space to move and jump
