@@ -25,7 +25,7 @@ It is written in C# (Unity coding language).
 
 ## Try it/download from GitHub
 1. Download the zip file from the GitHub releases page on this repo
-2. Extract the zip file on your computer (it should work for Mac, Windows, and Linux)
+2. Extract the zip file on your computer (it works only for Mac and Windows)
 3. Open the actual game file, and you should be able to play :) Enjoy!
 
 ## Controls - For volleyball (which is the only currently available mode)
