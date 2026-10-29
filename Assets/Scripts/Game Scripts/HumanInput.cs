@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class HumanInput : MonoBehaviour
 {
 
     private float mouseSensitivity = 5f;
-    private float JumpHeight = 2f;
+    private float JumpHeight = 2.4f;
     private float nextHitTime = 0f;
     private float nextDiveTime = 0f;
     private string pos;
@@ -15,6 +17,7 @@ public class HumanInput : MonoBehaviour
     public bool serving = false;
     public CrosshairController crosshairController;
     public CharacterMotor myMotor;
+    private CharacterController controller;
     [SerializeField] Camera cam;
     [SerializeField] CameraController camcon;
 
@@ -22,7 +25,7 @@ public class HumanInput : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        controller = GetComponent<CharacterController>();
     }
 
     public void requestServeInput()
@@ -67,7 +70,7 @@ public class HumanInput : MonoBehaviour
         Vector3 RelativeMoveDirection = transform.TransformDirection(MoveDirection);
         Vector3 PlayerRotation = new Vector3(0f, yRotation, 0f);
 
-        if(serving == true && transform.position.z > 8f) // add an ingame warning - this function prevents foot faulting and illegal serving
+        if(serving == true && transform.position.z > 8f && controller.isGrounded) // added isgrounded = false as well internally
         {
             myMotor.tpServePos();
         }
@@ -80,11 +83,17 @@ public class HumanInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G) && tossAllowed == true)
         {
             Vector3 Pos = transform.position;
+            GameObject[] balls = GameObject.FindGameObjectsWithTag("Volleyball");
+            foreach (GameObject ball in balls)
+            {
+                Destroy(ball);
+            } 
             myMotor.SpawnBall(Pos);
             
             if(tutorial == false)
             {
-                tossAllowed = false;//disables toss after serve again if in tutorial mode               
+                tossAllowed = false;//disables toss after serve again if in tutorial mode   
+                serving = false;            
             }
 
             if(tutorial == true)

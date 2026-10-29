@@ -17,6 +17,14 @@ public class gameManager : MonoBehaviour
     public float touchCount;
     public float T1pts;
     public float T2pts;
+    public float T1sets;
+    public float T2sets;
+    public float ptsInSet;
+    public float noSets;
+    public bool winByTwo = false;
+    private float setsToWin;
+    public bool gameWon = false;
+
     public string lastTouch;
     public string lastTouchPlayer;
     private GameSettingsManager settingsManager;
@@ -50,7 +58,19 @@ public class gameManager : MonoBehaviour
     public GameObject setTarget;
     public GameObject spikeTarget;
     public GameObject serveTarget;
+    public GameObject standingZone;
 
+    //Below is points UI stuff
+    public TMP_Text t1PtsText; //player and its teammates
+    public TMP_Text t2PtsText; //opponents
+    public TMP_Text t1SetText;
+    public TMP_Text t2SetText;
+    public GameObject pointsUIGroup;
+    public TMP_Text winText;
+    public GameObject finishMenu;
+    public GameObject pauseMenu;
+
+    private SceneLoader loader;
 
     void Awake()
     {
@@ -60,6 +80,8 @@ public class gameManager : MonoBehaviour
   // Start is called before the first frame update
     void Start()
   {
+settingsManager = FindFirstObjectByType<GameSettingsManager>();
+    Time.timeScale = 1f;
         if(hitGroup != null)
         {
             hitGroup.SetActive(false);
@@ -84,6 +106,22 @@ public class gameManager : MonoBehaviour
         {
             niceText.alpha = 0f;
         }
+        if(standingZone != null)
+        {
+            standingZone.SetActive(false);
+        }
+        if(pointsUIGroup != null)
+        {
+            pointsUIGroup.SetActive(false);
+        }
+        if(winText != null)
+        {
+            winText.gameObject.SetActive(false);
+        }
+        if(finishMenu != null)
+        {
+            finishMenu.SetActive(false);
+        }
         TutorialTextGroup = GameObject.Find("TutorialTextGroup");
         TutorialTextObject = GameObject.Find("InstructionsText");
         if(TutorialTextObject != null)
@@ -92,6 +130,7 @@ public class gameManager : MonoBehaviour
         }
         if(settingsManager.currentGameMode == GameSettingsManager.GameMode.VBFriendly)
         {
+            pointsUIGroup.SetActive(true);
             if(TutorialTextGroup != null)
             {
                 TutorialTextGroup.SetActive(false);
@@ -119,18 +158,26 @@ public class gameManager : MonoBehaviour
             resetPositions();
 
             assignRandomServe();
+            ptsInSet = settingsManager.ptsToWinSet;
+            noSets = settingsManager.noSets;
+            winByTwo = settingsManager.winByTwo;
+            setsToWin = Mathf.CeilToInt(noSets / 2f);            
         }
         else if(settingsManager.currentGameMode == GameSettingsManager.GameMode.VBTutorial)
         {
             PlayerInput.activateTutorialMode();
             StartCoroutine(startTutorial());
         }
+        loader = FindFirstObjectByType<SceneLoader>();
   }
 
-    private IEnumerator startTutorial()
+    private IEnumerator startTutorial() //Tutorial is complete now
     {
         TutorialTextGroup.SetActive(true);
         TutorialText.text = "Welcome to Duos Volleyball! My name's PJ and I'll teach you how to play volleyball! Are you ready? Click to continue";
+        yield return StartCoroutine(waitForClick());
+        standingZone.SetActive(true);
+        TutorialText.text = "Before you start, you need to press shift to lock your cursor into the screen. You're also recommended to stand in the blue zone for now. Click to continue";
         yield return StartCoroutine(waitForClick());
         TutorialText.text = "Great! First you'll learn to bump. When the ball comes to you, choose a direction and left click to bump! Also, use WASD/space to move and jump! Click to continue";
         yield return StartCoroutine(waitForClick());
@@ -158,6 +205,7 @@ public class gameManager : MonoBehaviour
         setTarget.SetActive(false);
         TutorialText.text = "Nice! Now it's time to learn to hit/spike. Jump once the ball is stationary in air, and left click, the ball will go in whatever direction you're facing. Click to continue";
         yield return StartCoroutine(waitForClick());
+        TutorialText.text = "Also, while it's doable to spike from the standing zone, it's better to stand close to the net where you can hit more down. Click to continue";
         spikeTarget.SetActive(true);
         TutorialTextGroup.SetActive(false);
         resetHitCircles();// add spike object and reference
@@ -169,6 +217,7 @@ public class gameManager : MonoBehaviour
         TutorialTextGroup.SetActive(true);
         hitGroup.SetActive(false);
         resetHitCircles();
+        standingZone.SetActive(false);
         TutorialText.text = "Nice! The final part of playing volleyball is the serve. It starts the point and good placement gives you easy points. Click to continue";
         yield return StartCoroutine(waitForClick());
         TutorialText.text = "Remember to stand behind the baseline when tossing, or you will get teleported backward. Toss with G, jump, and spike the ball over the net. Click to continue";
@@ -193,6 +242,10 @@ public class gameManager : MonoBehaviour
         TutorialTextGroup.SetActive(true);
         TutorialText.text = "Good work! Now you've mastered the basics, you're ready to play volleyball! Try the friendly match or practice mode. Click to continue";
         yield return StartCoroutine(waitForClick());
+        settingsManager.currentGameMode = GameSettingsManager.GameMode.VBFriendly;
+        SceneLoader loader = FindObjectOfType<SceneLoader>();
+        Destroy(loader.gameObject);
+        Destroy(settingsManager.gameObject);
         SceneManager.LoadSceneAsync(0);
     }
 
@@ -204,7 +257,7 @@ public class gameManager : MonoBehaviour
 
     private IEnumerator teachBump()
     {
-        if(successfulHitCount < 2f) // this is 2 bc it makes you do an extra bc hit count is read before the target gets hit
+        if(successfulHitCount <= 2f) // this is 2 bc it makes you do an extra bc hit count is read before the target gets hit
         {
                 yield return new WaitUntil(()=> GameObject.FindGameObjectsWithTag("Volleyball").Length < 1f);
                 Vector3 ballSpawnPos = new Vector3(0.8f, 1.26f, 14.95f);
@@ -212,13 +265,14 @@ public class gameManager : MonoBehaviour
                 BallController ballScript = ball.GetComponent<BallController>();
                 Vector3 offset = new Vector3(UnityEngine.Random.Range(-1f, 1f), 1.26f, UnityEngine.Random.Range(-1f, 1f));
                 ballScript.hitTowards(PlayerInput.transform.position + offset, 1f);
+                yield return new WaitUntil(()=> GameObject.FindGameObjectsWithTag("Volleyball").Length == 0f);
                 yield return StartCoroutine(teachBump());                 
         }
     }
 
     private IEnumerator teachSet()
     {
-        if(successfulHitCount < 2f)
+        if(successfulHitCount <= 2f)
         {
             yield return new WaitUntil(()=> GameObject.FindGameObjectsWithTag("Volleyball").Length < 1f);
             Vector3 ballSpawnPos = new Vector3(0.8f, 1.26f, 14.95f);
@@ -226,13 +280,14 @@ public class gameManager : MonoBehaviour
             BallController ballScript = ball.GetComponent<BallController>();
             Vector3 offset = new Vector3(UnityEngine.Random.Range(-1f, 1f), 1.26f, UnityEngine.Random.Range(-1f, 1f));
             ballScript.hitTowards(PlayerInput.transform.position + offset, 1f);
+            yield return new WaitUntil(()=> GameObject.FindGameObjectsWithTag("Volleyball").Length == 0f);
             yield return StartCoroutine(teachSet());
         }
     }
 
     private IEnumerator teachSpike()
     {
-        if(successfulHitCount < 2f)
+        if(successfulHitCount <= 2f && GameObject.FindGameObjectsWithTag("Volleyball").Length == 0f)
         {
             yield return new WaitUntil(()=> GameObject.FindGameObjectsWithTag("Volleyball").Length < 1f);
             Vector3 ballSpawnPos = new Vector3(0.8f, 1.26f, 14.95f);
@@ -240,6 +295,7 @@ public class gameManager : MonoBehaviour
             BallController ballScript = ball.GetComponent<BallController>();
             Vector3 offset = new Vector3(UnityEngine.Random.Range(-0.3f, 0.3f), 1.26f, UnityEngine.Random.Range(0f, 1f));
             ballScript.hitTowards(PlayerInput.transform.position + offset, 1.3f); //hits towards, dont change the start position also set doubled y multiplier is wayy too much lol
+            yield return new WaitUntil(()=> GameObject.FindGameObjectsWithTag("Volleyball").Length == 0f);
             yield return StartCoroutine(teachSpike());            
         }
     }
@@ -501,14 +557,53 @@ public class gameManager : MonoBehaviour
         }
     }
 
-   // Update is called once per frame
+    public void quitGameButton()
+    {
+        pauseMenu.SetActive(false);
+        if(loader != null)
+        {
+            loader = FindFirstObjectByType<SceneLoader>();   
+        }
+        if(settingsManager != null)
+        {
+            settingsManager = FindFirstObjectByType<GameSettingsManager>();   
+        }
+        Destroy(loader.gameObject);
+        Destroy(settingsManager.gameObject);
+        Time.timeScale = 1f;
+        SceneManager.LoadSceneAsync(0);
+    }
+
+    public void continueGameButton()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+   // Update is called once per 
    void Update()
    {
+        if (Input.GetKeyDown(KeyCode.P) && pauseMenu != null)
+        {
+            Time.timeScale = 0f;
+            pauseMenu.SetActive(true);
+        }
         if(settingsManager.currentGameMode == GameSettingsManager.GameMode.VBFriendly)
         {
             OpponentAI1Input.touchInfo(touchCount, lastTouch, lastTouchPlayer);
             OpponentAI2Input.touchInfo(touchCount, lastTouch, lastTouchPlayer);
             TeammateInput.touchInfo(touchCount, lastTouch, lastTouchPlayer);
+
+            if(t1PtsText != null && t2PtsText != null)
+            {
+                t1PtsText.text = T1pts.ToString();
+                t2PtsText.text = T2pts.ToString();
+            }
+            if(t1SetText != null && t2SetText != null)
+            {
+                t1SetText.text = T1sets.ToString();
+                t2SetText.text = T2sets.ToString();
+            }
 
             if(touchCount > 3f)
             {
@@ -523,7 +618,105 @@ public class gameManager : MonoBehaviour
                     givePoint("T1");
                     touchCount = 0f;
                 }
-        }            
+            }
+
+            if(T1pts >= ptsInSet && T2pts >= ptsInSet)
+            {
+                 if(winByTwo == true)
+                {
+                    if(T1pts - T2pts >= 2)
+                    {
+                        //maybe check if either side has the number of sets required?
+                        T1pts = 0f;
+                        T2pts = 0f;
+                        T1sets += 1f;
+                        resetPositions();
+                        assignRandomServe();
+                        touchCount = 0f;
+                        lastTouch = null;
+                    }
+                    else if(T2pts - T1pts >= 2)
+                    {
+                        //maybe check if either side has the number of sets required?
+                        T1pts = 0f;
+                        T2pts = 0f;
+                        T2sets += 1f;
+                        resetPositions();
+                        assignRandomServe();
+                        touchCount = 0f;
+                        lastTouch = null;
+                    }
+                }               
+            }
+
+            if(T1pts >= ptsInSet && T2pts < ptsInSet)
+            {
+                if(winByTwo == true)
+                {
+                    if(T1pts - T2pts >= 2)
+                    {
+                        //maybe check if either side has the number of sets required?
+                        T1pts = 0f;
+                        T2pts = 0f;
+                        T1sets += 1f;
+                        resetPositions();
+                        assignRandomServe();
+                        touchCount = 0f;
+                        lastTouch = null;
+                    }
+                }
+                else
+                {
+                    T1pts = 0f;
+                    T2pts = 0f;
+                    T1sets += 1f;
+                    resetPositions();
+                    assignRandomServe();
+                    touchCount = 0f;
+                    lastTouch = null;
+                }
+            }  
+            else if(T2pts>= ptsInSet && T1pts < ptsInSet)
+            {
+                if(winByTwo == true)
+                {
+                    if(T2pts - T1pts >= 2)
+                    {
+                        //maybe check if either side has the number of sets required?
+                        T1pts = 0f;
+                        T2pts = 0f;
+                        T2sets += 1f;
+                        resetPositions();
+                        assignRandomServe();
+                        touchCount = 0f;
+                        lastTouch = null;
+                    }
+                }
+                else
+                {
+                    T1pts = 0f;
+                    T2pts = 0f;
+                    T2sets += 1f;
+                    resetPositions();
+                    assignRandomServe();
+                    touchCount = 0f;
+                    lastTouch = null;
+                }                
+            }
+            if(T1sets >= setsToWin && gameWon == false && winText != null)
+            {
+                winText.gameObject.SetActive(true);
+                winText.text = "You win";
+                StartCoroutine(winTextDelay());
+                gameWon = true;
+            }
+            else if(T2sets >= setsToWin && gameWon == false && winText != null)
+            {
+                winText.gameObject.SetActive(true);
+                winText.text = "Opponents win";
+                StartCoroutine(winTextDelay());
+                gameWon = true;
+            }          
         }
         if(settingsManager.currentGameMode == GameSettingsManager.GameMode.VBTutorial)
         {
@@ -536,5 +729,13 @@ public class gameManager : MonoBehaviour
             }
         }
    }
+
+   private IEnumerator winTextDelay()
+    {
+        yield return new WaitForSeconds(3f);
+        finishMenu.SetActive(true);
+        winText.gameObject.SetActive(false);
+        Time.timeScale = 0f;
+    }
 
 }

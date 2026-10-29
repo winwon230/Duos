@@ -20,9 +20,9 @@ public class GameSettingsManager : MonoBehaviour
     public GameObject forestVBImage;
     public GameObject settingsGroup;
 
-    private float ptsToWinSet;
-    private float noSets;
-    private bool winByTwo;
+    public float ptsToWinSet;
+    public float noSets;
+    public bool winByTwo;
     // Start is called before the first frame update
     void Start() // should communicate with gameManager to configure how the games work and stuff
     {
@@ -38,6 +38,8 @@ public class GameSettingsManager : MonoBehaviour
         noSetsTXT.text = "<" + noSets.ToString() + ">";
         winByTwo = true;
         winByTwoTXT.text = "< on >";
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public enum GameMode
@@ -132,6 +134,22 @@ public class GameSettingsManager : MonoBehaviour
         if(currentGameMode == GameMode.VBTutorial)
         {
             SceneManager.LoadSceneAsync(1);
+        }
+        else if(currentGameMode == GameMode.VBFriendly)
+        {
+
+            if(selectedMapType == MapType.Indoor)
+            {
+                SceneManager.LoadSceneAsync(2);
+            }
+            else if(selectedMapType == MapType.Beach)
+            {
+                SceneManager.LoadSceneAsync(3);
+            }
+            else if(selectedMapType == MapType.Forest)
+            {
+                SceneManager.LoadSceneAsync(4);
+            }
         }
     }
 

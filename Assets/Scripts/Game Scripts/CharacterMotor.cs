@@ -70,7 +70,7 @@ public class CharacterMotor : MonoBehaviour
     public void MoveCharacter(Vector3 RelativeMoveDirection)
     {
 
-        float speed = 5f;
+        float speed = 3.5f;
         if (RelativeMoveDirection.magnitude >= 0.1f)
         {
             controller.Move(RelativeMoveDirection * speed * Time.deltaTime);
@@ -102,6 +102,7 @@ public class CharacterMotor : MonoBehaviour
 
     public void SpawnBall(Vector3 Pos)
     {
+        Pos.y = 0.5f;
         GameObject SpawnedBall = Instantiate(volleyball, Pos + transform.forward, Quaternion.identity);
         Rigidbody rbBall = SpawnedBall.GetComponent<Rigidbody>();
         GameObject SpawnedShadow = Instantiate(Shadow, Pos + transform.forward, Quaternion.Euler(90f, 0f, 0f));
@@ -118,7 +119,7 @@ public class CharacterMotor : MonoBehaviour
             rbBall.AddForce(Vector3.up * TossForce, ForceMode.Impulse);
         }
 
-        gameManager.updateLastPlayerTouch("T1play");
+        gameManager.updateLastPlayerTouch("T1play");// important to prevent people from scoring on a missed toss
     }
 
     public void HitBall(string HitType)

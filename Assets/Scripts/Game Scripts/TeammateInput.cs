@@ -178,7 +178,7 @@ public class TeammateInput : MonoBehaviour
                     hitMultiplier = Random.Range(1f, 1.8f);                    
                 }
                 spiking = true;
-                botMotor.Jump(2.4f);
+                botMotor.Jump(2.8f);
                 StartCoroutine(spikeAfterJump()); // reference below
             }
 

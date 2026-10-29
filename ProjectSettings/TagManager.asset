@@ -11,6 +11,7 @@ TagManager:
   - VolleyballCourt
   - VolleyballCourtCollider
   - Ground
+  - Locator
   layers:
   - Default
   - TransparentFX
@@ -20,8 +21,8 @@ TagManager:
   - UI
   - Volleyball
   - FPV hidden
-  - 
-  - 
+  - Camera
+  - Ground
   - 
   - 
   - 

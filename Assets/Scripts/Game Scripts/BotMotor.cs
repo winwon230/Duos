@@ -138,7 +138,7 @@ public class BotMotor : MonoBehaviour
 
     private IEnumerator Move(Vector3 Location)
     {
-        float speed = 5f;
+        float speed = 3.5f;
         float rotationSpeed = 5f;
 
 
@@ -190,7 +190,11 @@ public class BotMotor : MonoBehaviour
 
     public void SpawnBall(Vector3 Pos) // This needs to be a serving function
     {
-
+        GameObject[] allBalls = GameObject.FindGameObjectsWithTag("Volleyball");
+        foreach(GameObject obj in allBalls)
+        {
+            Destroy(obj);
+        }
         GameObject SpawnedBall = Instantiate(volleyball, Pos + transform.forward, Quaternion.identity);
         Rigidbody rbBall = SpawnedBall.GetComponent<Rigidbody>();
         GameObject SpawnedShadow = Instantiate(Shadow, Pos + transform.forward, Quaternion.Euler(90f, 0f, 0f));

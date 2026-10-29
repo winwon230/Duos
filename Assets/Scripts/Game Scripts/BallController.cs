@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using Palmmedia.ReportGenerator.Core;
 using Unity.VisualScripting;
 using UnityEditor.Build;
+using UnityEditor.Experimental.RestService;
 using UnityEngine;
 
 public class BallController : MonoBehaviour
@@ -16,6 +17,7 @@ public class BallController : MonoBehaviour
     private Quaternion reqRotation;
     private gameManager gameManager;
     private GameSettingsManager settingsManager;
+    public GameObject locator;
     private bool justHit;
     private float groundDetectionTimer = 1.5f;
     //public GameObject locator; locator is ugly
@@ -43,6 +45,11 @@ public class BallController : MonoBehaviour
             teammateInput = teammate.GetComponent<TeammateInput>();
         }
         gameManager = FindFirstObjectByType<gameManager>();
+        GameObject[] locator = GameObject.FindGameObjectsWithTag("Locator");
+        foreach(GameObject obj in locator)
+        {
+            Destroy(obj);
+        }
     }
 
 
@@ -126,6 +133,11 @@ public class BallController : MonoBehaviour
 
     public void CaclulatePos()
     {
+        GameObject[] locators = GameObject.FindGameObjectsWithTag("Locator");
+        foreach(GameObject obj in locators)
+        {
+            Destroy(obj);
+        }
         Vector3 originalPos = transform.position;
         float u = rb.velocity.y;
         float a = Physics.gravity.y;
@@ -184,8 +196,9 @@ public class BallController : MonoBehaviour
         {
             teammateInput.sendBallPos(finalPos);
         }
-        //GameObject spawnedLocator = Instantiate(locator, finalPos, Quaternion.identity);
-        //Destroy(spawnedLocator, 3f);
+        finalPos.y = 0.1f;
+        GameObject spawnedLocator = Instantiate(locator, finalPos, locator.transform.rotation);
+        Destroy(spawnedLocator, 3f);
     }
 
     private void OnCollisionEnter(Collision collision) // need to code for if the ball is out as well
@@ -216,9 +229,12 @@ public class BallController : MonoBehaviour
             groundDetectionTimer = 1.5f;        
         }
 
-        else if((collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("VolleyballCourtCollider")) && settingsManager.currentGameMode == GameSettingsManager.GameMode.VBTutorial)
+        else if(settingsManager.currentGameMode == GameSettingsManager.GameMode.VBTutorial)
         {
-            Destroy(gameObject);
+            if(collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("VolleyballCourtCollider"))
+            {
+                Destroy(gameObject);
+            }
         }
 
         else
@@ -249,7 +265,7 @@ public class BallController : MonoBehaviour
     {
         groundDetectionTimer -= Time.deltaTime;
         float height = transform.position.y;
-        if(Mathf.Abs(height - 5.4f) < 0.1f)
+        if(Mathf.Abs(height - 5.4f) < 0.1f && crosshair != null)
         {
             crosshair.Green();
         }
