@@ -265,7 +265,7 @@ settingsManager = FindFirstObjectByType<GameSettingsManager>();
         serveTarget.SetActive(false);
         hitGroup.SetActive(false);
         TutorialTextGroup.SetActive(true);
-        TutorialText.text = "Good work! Now you've mastered the basics, you're ready to play volleyball! Try the friendly match or practice mode. Click to continue";
+        TutorialText.text = "Good work! Now you've mastered the basics, you're ready to play volleyball! Try the friendly match mode. Click to continue";
         yield return StartCoroutine(waitForClick());
         settingsManager.currentGameMode = GameSettingsManager.GameMode.VBFriendly;
         SceneLoader loader = FindObjectOfType<SceneLoader>();

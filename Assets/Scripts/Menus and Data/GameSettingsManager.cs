@@ -44,7 +44,7 @@ public class GameSettingsManager : MonoBehaviour
 
     public enum GameMode
     {
-        VBTutorial, VBFriendly, VBPractice
+        VBTutorial, VBFriendly
     }
     public enum MapType
     {
