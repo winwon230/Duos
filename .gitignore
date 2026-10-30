@@ -1,1 +1,62 @@
-[Ll]ibrary/
+# ==========================================
+# Unity Default Ignores
+# ==========================================
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# Memory dumps and crash reports
+#=============
+/MemoryCaptures/
+/Logs/
+
+# Asset meta files for ignored folders
+#=============
+/[Ll]ibrary.meta
+/[Tt]emp.meta
+/[Oo]bj.meta
+/[Bb]uild.meta
+/[Bb]uilds.meta
+/[Uu]ser[Ss]ettings.meta
+
+# ==========================================
+# macOS System Files
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon\r
+._*
+.Spotlight-V100
+.Trashes
+*.icloud
+
+# ==========================================
+# IDEs & Code Editors (Rider, VS Code, VS)
+# ==========================================
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# ==========================================
+# Build Artifacts & Packages
+# ==========================================
+*.apk
+*.aab
+*.unitypackage
+*.app/
