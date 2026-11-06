@@ -1,5 +1,7 @@
 # Duos
 
+##Pre note: PLEASE TRY THE TUTORIAL MODE FIRST, CLICK THE "VBFRIENDLY" BUTTON TO GET IT
+
 Duos is a 3D Unity-based game I started making at about June 2026.
 It's a sports game that will feature volleyball and soccer, and more to come in the future.
 
